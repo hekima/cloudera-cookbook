@@ -21,8 +21,8 @@
 #default[:java][:install_flavor]           = "oracle"
 #default[:java][:java_home]                = "/usr"
 
-default[:hadoop][:version]                = "2.0.0"
-default[:hadoop][:release]                = "4.5.0"
+default[:hadoop][:version]                = "2.2.0"
+default[:hadoop][:release]                = "5.0.0b2"
 default[:hadoop][:opsworks]               = false
 
 default[:hadoop][:namenode_port]          = "8020"

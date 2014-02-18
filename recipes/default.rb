@@ -43,13 +43,6 @@ directory chef_conf_dir do
   recursive true
 end
 
-#namenode search is broken
-#namenode = find_cloudera_namenode(node.chef_environment)
-#unless namenode
-#  Chef::Log.fatal "[Cloudera] Unable to find the cloudera namenode!"
-#  raise
-#end
-
 if(Chef::Config[:solo])
 else
   if node.name.include?('namenode1')
