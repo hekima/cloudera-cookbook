@@ -48,7 +48,7 @@ else
   if node.name.include?('namenode1')
     node.default[:hadoop][:core_site]['fs.default.name'] = "hdfs://#{node.name}:#{node[:hadoop][:namenode_port]}"
   else
-    namenode = search_for_nodes("chef_environment:#{node.chef_environment} AND recipes:cloudera\\:\\:hadoop_namenode", 'fqdn').first
+    namenode = search_for_nodes(["hadoop_namenode"], 'fqdn').first
     node.default[:hadoop][:core_site]['fs.default.name'] = "hdfs://#{namenode}:#{node[:hadoop][:namenode_port]}"
   end
 end
@@ -65,8 +65,6 @@ template "#{chef_conf_dir}/core-site.xml" do
   variables core_site_vars
 end
 
-#secondary_namenode = search(:node, "chef_environment:#{node.chef_environment} and recipes:cloudera\\:\\:hadoop_secondary_namenode_server").first
-
 hdfs_site_vars = { :options => node[:hadoop][:hdfs_site] }
 #hdfs_site_vars[:options]['fs.default.name'] = "hdfs://#{namenode[:ipaddress]}:#{node[:hadoop][:namenode_port]}"
 # TODO dfs.secondary.http.address should have port made into an attribute - maybe
@@ -81,7 +79,7 @@ template "#{chef_conf_dir}/hdfs-site.xml" do
   variables hdfs_site_vars
 end
 
-jobtracker = search(:node, "chef_environment:#{node.chef_environment} AND recipes:cloudera\\:\\:hadoop_jobtracker").first
+jobtracker = find_matching_nodes(["hadoop_jobtracker"]).first
 
 node.default[:hadoop][:mapred_site]['mapred.job.tracker'] = "#{jobtracker[:fqdn]}:#{node[:hadoop][:jobtracker_port]}" if jobtracker
 mapred_site_vars = { :options => node[:hadoop][:mapred_site] }
@@ -144,7 +142,7 @@ if(Chef::Config[:solo])
   namenode_servers = node['ipaddress']
   masters = [ "localhost" ]
 else
-  namenode_servers = search(:node, "chef_environment:#{node.chef_environment} AND recipes:cloudera\\:\\:hadoop_namenode OR recipes:cloudera\\:\\:hadoop_secondary_namenode")
+  namenode_servers = find_matching_nodes(["hadoop_namenode", "hadoop_secondary_namenode"]).first
   masters = namenode_servers.map { |node| node[:fqdn] }
 end
 
@@ -161,7 +159,7 @@ if(Chef::Config[:solo])
   datanode_servers = node['ipaddress']
   slaves = [ "localhost" ]
 else
-  datanode_servers = search(:node, "chef_environment:#{node.chef_environment} AND recipes:cloudera\\:\\:hadoop_datanode")
+  datanode_servers = find_matching_nodes(["hadoop_datanode"]).first
   slaves = datanode_servers.map { |node| node[:fqdn] }
 end
 
@@ -216,7 +214,7 @@ template "/usr/lib/hadoop-#{node[:hadoop][:version]}-mapreduce/bin/hadoop-config
   owner "root"
   group "root"
   variables(
-    :java_home => node[:java][:java_home]
+    :java_home => node[:hadoop][:hadoop_env]['java_home']
   )
 end
 

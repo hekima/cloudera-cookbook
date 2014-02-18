@@ -18,8 +18,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-#default[:java][:install_flavor]           = "oracle"
-#default[:java][:java_home]                = "/usr"
 
 default[:hadoop][:version]                = "2.2.0"
 default[:hadoop][:release]                = "5.0.0b2"
@@ -59,7 +57,7 @@ default[:hadoop][:hadoop_policy]['security.resourcelocalizer.protocol.acl'] = "*
 default[:hadoop][:hadoop_policy]['security.job.task.protocol.acl'] = "*"
 default[:hadoop][:hadoop_policy]['security.job.client.protocol.acl'] = "*"
 
-default[:hadoop][:hadoop_env]['JAVA_HOME'] = "/usr/lib/jvm/java-6-oracle/"
+default[:hadoop][:hadoop_env]['java_home'] = "/usr/lib/jvm/java-6-oracle/"
 
 default[:hadoop][:fair_scheduler] = {}
 

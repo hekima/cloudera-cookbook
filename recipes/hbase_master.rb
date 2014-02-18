@@ -28,7 +28,7 @@ when "rhel"
     owner "root"
     group "root"
     variables(
-      :java_home => node[:java][:java_home]
+      :java_home => node[:hadoop][:hadoop_env]['java_home']
     )
   end
 end
@@ -39,7 +39,7 @@ template "/usr/lib/hbase/bin/hbase-daemon.sh" do
   owner "root"
   group "root"
   variables(
-    :java_home => node[:java][:java_home]  
+    :java_home => node[:hadoop][:hadoop_env]['java_home']
   )
 end
 
@@ -49,7 +49,7 @@ template "/usr/lib/hbase/bin/hbase-config.sh" do
   owner "root"
   group "root"
   variables(
-    :java_home => node[:java][:java_home]  
+    :java_home => node[:hadoop][:hadoop_env]['java_home']
   )
 end
 
