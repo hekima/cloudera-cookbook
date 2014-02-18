@@ -22,7 +22,7 @@
 #default[:java][:java_home]                = "/usr"
 
 default[:hadoop][:version]                = "0.20"
-default[:hadoop][:release]                = "4.3.1"
+default[:hadoop][:release]                = "4.5.0"
 
 default[:hadoop][:namenode_port]          = "8020"
 default[:hadoop][:jobtracker_port]        = "8021"
