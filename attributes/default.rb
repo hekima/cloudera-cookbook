@@ -23,6 +23,7 @@
 
 default[:hadoop][:version]                = "2.0.0"
 default[:hadoop][:release]                = "4.5.0"
+default[:hadoop][:opsworks]               = false
 
 default[:hadoop][:namenode_port]          = "8020"
 default[:hadoop][:jobtracker_port]        = "8021"
