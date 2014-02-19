@@ -44,8 +44,8 @@ directory chef_conf_dir do
   recursive true
 end
 
-if node.name.include?('namenode')
-  node.default[:hadoop][:core_site]['fs.default.name'] = "hdfs://#{node.name}:#{node[:hadoop][:namenode_port]}"
+if node[:hostname].include?('namenode')
+  node.default[:hadoop][:core_site]['fs.default.name'] = "hdfs://#{node[:hostname]}:#{node[:hadoop][:namenode_port]}"
 else
   namenode = search_for_nodes(["hadoop_namenode"], 'fqdn').first
   node.default[:hadoop][:core_site]['fs.default.name'] = "hdfs://#{namenode}:#{node[:hadoop][:namenode_port]}"
@@ -89,16 +89,6 @@ template "#{chef_conf_dir}/mapred-site.xml" do
   group "hdfs"
   action :create
   variables mapred_site_vars
-end
-
-hadoop_policy_vars = { :options => node[:hadoop][:hadoop_policy] }
-template "#{chef_conf_dir}/hadoop-policy.xml" do
-  source "hadoop-policy.xml.erb"
-  mode 0644
-  owner "hdfs"
-  group "hdfs"
-  action :create
-  variables hadoop_policy_vars
 end
 
 template "#{chef_conf_dir}/hadoop-env.sh" do
