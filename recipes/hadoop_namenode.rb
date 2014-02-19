@@ -56,3 +56,10 @@ node[:hadoop][:hdfs_site]['dfs.namenode.name.dir'].split(',').each do |dir|
   end
 end
 
+execute "init namenode" do
+  command "service hadoop-hdfs-namenode init"
+end
+
+service "hadoop-hdfs-namenode" do
+  action [ :start, :enable ]
+end
