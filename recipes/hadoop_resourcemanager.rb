@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: cloudera
-# Recipe:: hadoop_jobtracker
+# Recipe:: hadoop_resourcemanager
 #
 # Author:: Cliff Erson (<cerson@me.com>)
 # Author:: Istvan Szukacs (<istvan.szukacs@gmail.com>)
@@ -21,11 +21,11 @@
 
 include_recipe "cloudera"
 
-package "hadoop-#{node[:hadoop][:version]}-mapreduce-jobtracker"
+package "hadoop-yarn-resourcemanager"
 
 case node[:platform_family]
 when "rhel"
-  template "/etc/init.d/hadoop-#{node[:hadoop][:version]}-jobtracker" do
+  template "/etc/init.d/hadoop-#{node[:hadoop][:version]}-resourcemanager" do
     mode 0755
     owner "root"
     group "root"
@@ -35,7 +35,7 @@ when "rhel"
   end
 end
 
-service "hadoop-#{node[:hadoop][:version]}-mapreduce-jobtracker" do
+service "hadoop-yarn-resourcemanager" do
   action [ :start, :enable ]
 end
 

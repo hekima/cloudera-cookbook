@@ -34,7 +34,7 @@ end
 
 case node[:platform_family]
 when "rhel"
-  template "/etc/init.d/hadoop-0.20-datanode" do
+  template "/etc/init.d/hadoop-#{node[:hadoop][:version]}-datanode" do
     mode 0755
     owner "root"
     group "root"

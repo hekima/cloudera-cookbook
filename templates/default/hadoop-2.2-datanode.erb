@@ -20,12 +20,12 @@
 # description: Hadoop datanode
 
 source /etc/rc.d/init.d/functions
-source /etc/default/hadoop-0.20
+source /etc/default/hadoop-2.2
 
 JAVA_HOME="<%= @java_home  %>"
 export JAVA_HOME
 
-source /usr/lib/hadoop-0.20/bin/hadoop-config.sh
+source /usr/lib/hadoop-2.2/bin/hadoop-config.sh
 
 
 RETVAL_SUCCESS=0
@@ -36,7 +36,7 @@ STATUS_DEAD_AND_LOCK=2
 STATUS_NOT_RUNNING=3
 
 RETVAL=0
-HADOOP_PID_DIR=${HADOOP_PID_DIR:-/var/run/hadoop-0.20}
+HADOOP_PID_DIR=${HADOOP_PID_DIR:-/var/run/hadoop-2.2}
 PIDFILE="$HADOOP_PID_DIR/hadoop-$HADOOP_IDENT_STRING-datanode.pid"
 LOCKFILE="/var/lock/subsys/hadoop-datanode"
 desc="Hadoop datanode daemon"
@@ -49,7 +49,7 @@ start() {
   echo 'never' > /sys/kernel/mm/redhat_transparent_hugepage/defrag
   <%- end -%>
   echo -n $"Starting $desc (hadoop-datanode): "
-  daemon /usr/lib/hadoop-0.20/bin/hadoop-daemon.sh --config "/etc/hadoop-0.20/conf" start datanode $DAEMON_FLAGS
+  daemon /usr/lib/hadoop-2.2/bin/hadoop-daemon.sh --config "/etc/hadoop-2.2/conf" start datanode $DAEMON_FLAGS
   RETVAL=$?
 
   if [ "datanode" = "datanode" ]; then
@@ -65,7 +65,7 @@ start() {
 
 stop() {
   echo -n $"Stopping $desc (hadoop-datanode): "
-  daemon /usr/lib/hadoop-0.20/bin/hadoop-daemon.sh --config "/etc/hadoop-0.20/conf" stop datanode
+  daemon /usr/lib/hadoop-2.2/bin/hadoop-daemon.sh --config "/etc/hadoop-2.2/conf" stop datanode
   RETVAL=$?
 
   [ $RETVAL -eq $RETVAL_SUCCESS ] && rm -f $LOCKFILE $PIDFILE

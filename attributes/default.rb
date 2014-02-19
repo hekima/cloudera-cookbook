@@ -19,12 +19,12 @@
 # limitations under the License.
 #
 
-default[:hadoop][:version]                = "2.2.0"
+default[:hadoop][:version]                = "2.2"
 default[:hadoop][:release]                = "5.0.0b2"
 default[:hadoop][:opsworks]               = false
 
 default[:hadoop][:namenode_port]          = "8020"
-default[:hadoop][:jobtracker_port]        = "8021"
+default[:hadoop][:resourcemanager_port]        = "8021"
 
 default[:hadoop][:conf_dir]               = "conf.chef"
 default[:hadoop][:core_site]['hadoop.tmp.dir'] = "/tmp"
@@ -70,7 +70,7 @@ default[:hadoop][:yum_repo_url]           = nil
 default[:hadoop][:yum_repo_key_url]       = nil
 
 default[:hadoop][:mapred_site]['mapred.fairscheduler.allocation.file'] = "/etc/hadoop/#{node[:hadoop][:conf_dir]}/fair-scheduler.xml"
-default[:hadoop][:mapred_site]['mapred.job.tracker'] = "localhost:#{node['hadoop']['jobtracker_port']}"
+default[:hadoop][:mapred_site]['mapred.job.tracker'] = "localhost:#{node['hadoop']['resourcemanager_port']}"
 default[:hadoop][:mapred_site]['mapred.local.dir'] = "/srv/hadoop/mapred/tmp"
 
 default[:hadoop][:log4j]['hadoop.root.logger']                                                 = 'INFO,console'

@@ -14,18 +14,18 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 # 
-# Starts a Hadoop jobtracker
+# Starts a Hadoop resourcemanager
 # 
 # chkconfig: 35 90 10
-# description: Hadoop jobtracker
+# description: Hadoop resourcemanager
 
 source /etc/rc.d/init.d/functions
-source /etc/default/hadoop-0.20
+source /etc/default/hadoop-2.2
 
 JAVA_HOME="<%= @java_home  %>"
 export JAVA_HOME
 
-source /usr/lib/hadoop-0.20/bin/hadoop-config.sh
+source /usr/lib/hadoop-2.2/bin/hadoop-config.sh
 
 RETVAL_SUCCESS=0
 
@@ -35,18 +35,18 @@ STATUS_DEAD_AND_LOCK=2
 STATUS_NOT_RUNNING=3
 
 RETVAL=0
-HADOOP_PID_DIR=${HADOOP_PID_DIR:-/var/run/hadoop-0.20}
-PIDFILE="$HADOOP_PID_DIR/hadoop-$HADOOP_IDENT_STRING-jobtracker.pid"
-LOCKFILE="/var/lock/subsys/hadoop-jobtracker"
-desc="Hadoop jobtracker daemon"
+HADOOP_PID_DIR=${HADOOP_PID_DIR:-/var/run/hadoop-2.2}
+PIDFILE="$HADOOP_PID_DIR/hadoop-$HADOOP_IDENT_STRING-resourcemanager.pid"
+LOCKFILE="/var/lock/subsys/hadoop-resourcemanager"
+desc="Hadoop resourcemanager daemon"
 SLEEP_TIME=5
 
 start() {
-  echo -n $"Starting $desc (hadoop-jobtracker): "
-  daemon /usr/lib/hadoop-0.20/bin/hadoop-daemon.sh --config "/etc/hadoop-0.20/conf" start jobtracker $DAEMON_FLAGS
+  echo -n $"Starting $desc (hadoop-resourcemanager): "
+  daemon /usr/lib/hadoop-2.2/bin/hadoop-daemon.sh --config "/etc/hadoop-2.2/conf" start resourcemanager $DAEMON_FLAGS
   RETVAL=$?
 
-  if [ "jobtracker" = "datanode" ]; then
+  if [ "resourcemanager" = "datanode" ]; then
     # Some processes are slow to start
     sleep $SLEEP_TIME
     checkstatus
@@ -58,13 +58,13 @@ start() {
 }
 
 stop() {
-  echo -n $"Stopping $desc (hadoop-jobtracker): "
-  daemon /usr/lib/hadoop-0.20/bin/hadoop-daemon.sh --config "/etc/hadoop-0.20/conf" stop jobtracker
+  echo -n $"Stopping $desc (hadoop-resourcemanager): "
+  daemon /usr/lib/hadoop-2.2/bin/hadoop-daemon.sh --config "/etc/hadoop-2.2/conf" stop resourcemanager
   RETVAL=$?
 
   [ $RETVAL -eq $RETVAL_SUCCESS ] && rm -f $LOCKFILE $PIDFILE
 
-  if [ "jobtracker" = "datanode" ]; then
+  if [ "resourcemanager" = "datanode" ]; then
     # Some processes are slow to stop
     sleep $SLEEP_TIME
     checkstatus
@@ -82,7 +82,7 @@ restart() {
 }
 
 checkstatus(){
-  status -p $PIDFILE jobtracker
+  status -p $PIDFILE resourcemanager
   RETVAL=$?
 }
 
@@ -120,7 +120,7 @@ hadoopservice() {
       condrestart
       ;;
     *)
-      if [ "jobtracker" = "namenode" ]; then
+      if [ "resourcemanager" = "namenode" ]; then
         if [ "$1" = "upgrade" -o "$1" = "rollback" ]; then
           DAEMON_FLAGS=-$1 $0 start
           RETVAL=$?

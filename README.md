@@ -23,7 +23,7 @@ The cookbook is on a fairly good shape now, it was used to stand up a production
 
 * `node[:hadoop][:conf_dir]` - The hadoop config dir used inside /etc/hadoop and referenced via the alternatives system. Default `conf.chef`
 * `node[:hadoop][:namenode_port]` - Port for namenode service. Default `54310`
-* `node[:hadoop][:jobtracker_port]` - Port for jobtracker service. Default `54311`
+* `node[:hadoop][:resourcemanager_port]` - Port for resourcemanager service. Default `54311`
 
 ##Rack-aware attributes
 

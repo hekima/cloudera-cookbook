@@ -79,9 +79,9 @@ template "#{chef_conf_dir}/hdfs-site.xml" do
   variables hdfs_site_vars
 end
 
-jobtracker = find_matching_nodes(["hadoop_jobtracker"]).first
+resourcemanager = find_matching_nodes(["hadoop_resourcemanager"]).first
 
-node.default[:hadoop][:mapred_site]['mapred.job.tracker'] = "#{jobtracker[:fqdn]}:#{node[:hadoop][:jobtracker_port]}" if jobtracker
+node.default[:hadoop][:mapred_site]['mapred.job.tracker'] = "#{resourcemanager[:fqdn]}:#{node[:hadoop][:resourcemanager_port]}" if resourcemanager
 mapred_site_vars = { :options => node[:hadoop][:mapred_site] }
 
 template "#{chef_conf_dir}/mapred-site.xml" do
