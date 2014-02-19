@@ -25,6 +25,7 @@
 include_recipe "cloudera::repo"
 
 
+package "openjdk-7-jdk"
 package "hadoop-client"
 package "nscd"
 

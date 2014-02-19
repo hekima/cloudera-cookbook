@@ -57,7 +57,7 @@ default[:hadoop][:hadoop_policy]['security.resourcelocalizer.protocol.acl'] = "*
 default[:hadoop][:hadoop_policy]['security.job.task.protocol.acl'] = "*"
 default[:hadoop][:hadoop_policy]['security.job.client.protocol.acl'] = "*"
 
-default[:hadoop][:hadoop_env]['java_home'] = "/usr/lib/jvm/java-6-oracle/"
+default[:hadoop][:hadoop_env]['java_home'] = "/usr/lib/jvm/java-7-openjdk-amd64"
 
 default[:hadoop][:fair_scheduler] = {}
 
