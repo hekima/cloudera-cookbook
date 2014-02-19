@@ -14,12 +14,12 @@ module Extensions
       result_map = {}
       types.each do |type|
         node[:opsworks][:layers][type][:instances].each do |instance_name, instance|
-        result_map[instance_name] = instance
+          result_map[instance_name] = instance
+        end
       end
       result_map.values
     else
       results = []
-      "chef_environment:#{node.chef_environment} AND recipes:cloudera\\:\\:hadoop_namenode OR recipes:cloudera\\:\\:hadoop_secondary_namenode")
       types_query = types.map{ |t| "recipes:cloudera\\:\\:#{t}"}.join(" OR ")
       query = "chef_environment:#{node.chef_environment} AND (#{types_query})"
       Chef::Search::Query.new.search(:node, query) { |o| results << o }

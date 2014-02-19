@@ -209,7 +209,7 @@ directory hadoop_tmp_dir do
   recursive true
 end
 
-template "/usr/lib/hadoop-#{node[:hadoop][:version]}-mapreduce/bin/hadoop-config.sh" do
+template "/usr/lib/hadoop-0.20-mapreduce/bin/hadoop-config.sh" do
   source "hadoop_config.erb"
   mode 0755
   owner "root"
