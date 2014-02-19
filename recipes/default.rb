@@ -112,14 +112,6 @@ template "#{chef_conf_dir}/hadoop-env.sh" do
   variables( :options => node[:hadoop][:hadoop_env] )
 end
 
-#template node[:hadoop][:mapred_site]['mapred.fairscheduler.allocation.file'] do
-#  mode 0644
-#  owner "hdfs"
-#  group "hdfs"
-#  action :create
-#  variables node[:hadoop][:fair_scheduler]
-#end
-
 template "#{chef_conf_dir}/log4j.properties" do
   source "generic.properties.erb"
   mode 0644
@@ -129,23 +121,8 @@ template "#{chef_conf_dir}/log4j.properties" do
   variables( :properties => node[:hadoop][:log4j] )
 end
 
-template "#{chef_conf_dir}/hadoop-metrics.properties" do
-  source "generic.properties.erb"
-  mode 0644
-  owner "hdfs"
-  group "hdfs"
-  action :create
-  variables( :properties => node[:hadoop][:hadoop_metrics] )
-end
-
-# Create the master and slave files
-if(Chef::Config[:solo])
-  namenode_servers = node['ipaddress']
-  masters = [ "localhost" ]
-else
-  namenode_servers = find_matching_nodes(["hadoop_namenode", "hadoop_secondary_namenode"]).first
-  masters = namenode_servers.map { |node| node[:fqdn] }
-end
+namenode_servers = find_matching_nodes(["hadoop_namenode", "hadoop_secondary_namenode"]).first
+masters = namenode_servers.map { |node| node[:fqdn] }
 
 template "#{chef_conf_dir}/masters" do
   source "master_slave.erb"
@@ -156,13 +133,8 @@ template "#{chef_conf_dir}/masters" do
   variables( :nodes => masters )
 end
 
-if(Chef::Config[:solo])
-  datanode_servers = node['ipaddress']
-  slaves = [ "localhost" ]
-else
-  datanode_servers = find_matching_nodes(["hadoop_datanode"]).first
-  slaves = datanode_servers.map { |node| node[:fqdn] }
-end
+datanode_servers = find_matching_nodes(["hadoop_datanode"]).first
+slaves = datanode_servers.map { |node| node[:fqdn] }
 
 template "#{chef_conf_dir}/slaves" do
   source "master_slave.erb"
