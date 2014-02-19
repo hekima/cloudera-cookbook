@@ -13,8 +13,12 @@ module Extensions
     if node[:hadoop][:opsworks]
       result_map = {}
       types.each do |type|
-        node[:opsworks][:layers][type][:instances].each do |instance_name, instance|
-          result_map[instance_name] = instance
+        if not node[:opsworks][:layers][type].nil?
+          node[:opsworks][:layers][type][:instances].each do |instance_name, instance|
+            result_map[instance_name] = JSON.parse(JSON.dump(instance))
+            result_map[instance_name][:fqdn] = instance_name
+            result_map[instance_name][:hostname] = instance_name
+          end
         end
       end
       result_map.values

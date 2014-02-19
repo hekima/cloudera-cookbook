@@ -44,14 +44,11 @@ directory chef_conf_dir do
   recursive true
 end
 
-if(Chef::Config[:solo])
+if node.name.include?('namenode')
+  node.default[:hadoop][:core_site]['fs.default.name'] = "hdfs://#{node.name}:#{node[:hadoop][:namenode_port]}"
 else
-  if node.name.include?('namenode1')
-    node.default[:hadoop][:core_site]['fs.default.name'] = "hdfs://#{node.name}:#{node[:hadoop][:namenode_port]}"
-  else
-    namenode = search_for_nodes(["hadoop_namenode"], 'fqdn').first
-    node.default[:hadoop][:core_site]['fs.default.name'] = "hdfs://#{namenode}:#{node[:hadoop][:namenode_port]}"
-  end
+  namenode = search_for_nodes(["hadoop_namenode"], 'fqdn').first
+  node.default[:hadoop][:core_site]['fs.default.name'] = "hdfs://#{namenode}:#{node[:hadoop][:namenode_port]}"
 end
 
 core_site_vars = { :options => node[:hadoop][:core_site] }
@@ -121,7 +118,7 @@ template "#{chef_conf_dir}/log4j.properties" do
   variables( :properties => node[:hadoop][:log4j] )
 end
 
-namenode_servers = find_matching_nodes(["hadoop_namenode", "hadoop_secondary_namenode"]).first
+namenode_servers = find_matching_nodes(["hadoop_namenode", "hadoop_secondary_namenode"])
 masters = namenode_servers.map { |node| node[:fqdn] }
 
 template "#{chef_conf_dir}/masters" do
@@ -133,7 +130,7 @@ template "#{chef_conf_dir}/masters" do
   variables( :nodes => masters )
 end
 
-datanode_servers = find_matching_nodes(["hadoop_datanode"]).first
+datanode_servers = find_matching_nodes(["hadoop_datanode"])
 slaves = datanode_servers.map { |node| node[:fqdn] }
 
 template "#{chef_conf_dir}/slaves" do
