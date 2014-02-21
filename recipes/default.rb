@@ -45,10 +45,10 @@ directory chef_conf_dir do
 end
 
 if node[:hostname].include?('namenode')
-  node.default[:hadoop][:core_site]['fs.default.name'] = "hdfs://#{node[:hostname]}:#{node[:hadoop][:namenode_port]}"
+  node.default[:hadoop][:core_site]['fs.defaultFS'] = "hdfs://#{node[:hostname]}:#{node[:hadoop][:namenode_port]}"
 else
   namenode = search_for_nodes(["hadoop_namenode"], 'fqdn').first
-  node.default[:hadoop][:core_site]['fs.default.name'] = "hdfs://#{namenode}:#{node[:hadoop][:namenode_port]}"
+  node.default[:hadoop][:core_site]['fs.defaultFS'] = "hdfs://#{namenode}:#{node[:hadoop][:namenode_port]}"
 end
 
 core_site_vars = { :options => node[:hadoop][:core_site] }
