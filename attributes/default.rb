@@ -46,8 +46,7 @@ default[:hadoop][:hdfs_site]['dfs.namenode.rpc-address'] = "0.0.0.0:#{node[:hado
 default[:hadoop][:mapred_site]['mapreduce.framework.name'] = "yarn"
 
 default[:hadoop][:yarn_site]['yarn.nodemanager.aux-services'] = "mapreduce_shuffle"
-default[:hadoop][:yarn_site]['yarn.nodemanager.aux-services.mapreduce.shuffle.class'] = "yarn.nodemanager.aux-services.
-mapreduce_shuffle.class"
+default[:hadoop][:yarn_site]['yarn.nodemanager.aux-services.mapreduce.shuffle.class'] = "yarn.nodemanager.aux-services.mapreduce_shuffle.class"
 default[:hadoop][:yarn_site]['yarn.application.classpath'] = "$HADOOP_CONF_DIR, $HADOOP_COMMON_HOME/*, $HADOOP_COMMON_HOME/lib/*, $HADOOP_HDFS_HOME/*, $HADOOP_HDFS_HOME/lib/*, $HADOOP_MAPRED_HOME/*, $HADOOP_MAPRED_HOME/lib/*, $HADOOP_YARN_HOME/*, $HADOOP_YARN_HOME/lib/*"
 default[:hadoop][:yarn_site]['yarn.log.aggregation.enable'] = true
 default[:hadoop][:yarn_site]['yarn.nodemanager.local-dirs'] = "/mnt/hadoop/yarn/local"

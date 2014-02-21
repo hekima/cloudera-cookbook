@@ -91,7 +91,6 @@ template "#{chef_conf_dir}/mapred-site.xml" do
   variables mapred_site_vars
 end
 
-default[:hadoop][:yarn_site]['yarn.resourcemanager.hostname'] = "TROCAR"
 if node[:hostname].include?('namenode')
   node.default[:hadoop][:yarn_site]['yarn.resourcemanager.hostname'] = node[:hostname]
 else

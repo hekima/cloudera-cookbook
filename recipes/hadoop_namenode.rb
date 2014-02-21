@@ -58,6 +58,7 @@ end
 
 execute "init namenode" do
   command "service hadoop-hdfs-namenode init"
+  returns [0,1]
 end
 
 service "hadoop-hdfs-namenode" do
