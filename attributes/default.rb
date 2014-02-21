@@ -24,7 +24,7 @@ default[:hadoop][:release]                = "5.0.0b2"
 default[:hadoop][:opsworks]               = false
 
 default[:hadoop][:namenode_port]          = "8020"
-default[:hadoop][:resourcemanager_port]        = "8021"
+default[:hadoop][:resourcemanager_port]   = "8021"
 
 default[:hadoop][:conf_dir]               = "conf.chef"
 
@@ -38,11 +38,24 @@ default[:hadoop][:rackaware][:rack]       = "rack0"
 default[:hadoop][:yum_repo_url]           = nil
 default[:hadoop][:yum_repo_key_url]       = nil
 
-#default[:hadoop][:core_site]['fs.defaultFS'] = "hdfs://localhost:#{node['hadoop']['namenode_port']}"
-#default[:hadoop][:core_site]['io.file.buffer.size'] = 131072
+default[:hadoop][:hdfs_site]['dfs.namenode.name.dir'] = "/mnt/hadoop/dfs/namenode"
+default[:hadoop][:hdfs_site]['dfs.datanode.data.dir'] = "/mnt/hadoop/dfs/datanode"
+default[:hadoop][:hdfs_site]['fs.checkpoint.dir'] = "/mnt/hadoop/dfs/checkpoint"
+default[:hadoop][:hdfs_site]['dfs.namenode.rpc-address'] = "0.0.0.0:#{node[:hadoop][:namenode_port]}"
 
-default[:hadoop][:hdfs_site]['dfs.namenode.name.dir'] = "/srv/hadoop/dfs/namenode"
-default[:hadoop][:hdfs_site]['dfs.datanode.data.dir'] = "/srv/hadoop/dfs/datanode"
+default[:hadoop][:mapred_site]['mapreduce.framework.name'] = "yarn"
+
+default[:hadoop][:yarn_site]['yarn.nodemanager.aux-services'] = "mapreduce_shuffle"
+default[:hadoop][:yarn_site]['yarn.nodemanager.aux-services.mapreduce.shuffle.class'] = "yarn.nodemanager.aux-services.
+mapreduce_shuffle.class"
+default[:hadoop][:yarn_site]['yarn.application.classpath'] = "$HADOOP_CONF_DIR, $HADOOP_COMMON_HOME/*, $HADOOP_COMMON_HOME/lib/*, $HADOOP_HDFS_HOME/*, $HADOOP_HDFS_HOME/lib/*, $HADOOP_MAPRED_HOME/*, $HADOOP_MAPRED_HOME/lib/*, $HADOOP_YARN_HOME/*, $HADOOP_YARN_HOME/lib/*"
+default[:hadoop][:yarn_site]['yarn.log.aggregation.enable'] = true
+default[:hadoop][:yarn_site]['yarn.nodemanager.local-dirs'] = "/mnt/hadoop/yarn/local"
+default[:hadoop][:yarn_site]['yarn.nodemanager.log-dirs'] = "/mnt/hadoop/yarn/logs"
+default[:hadoop][:yarn_site]['yarn.nodemanager.remote-app-log-dir'] = "hdfs://var/log/hadoop-yarn/app"
+
+
+
 
 default[:hadoop][:log4j]['hadoop.root.logger']                                                 = 'INFO,console'
 default[:hadoop][:log4j]['hadoop.security.logger']                                             = 'INFO,console'

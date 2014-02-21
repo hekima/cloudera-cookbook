@@ -35,6 +35,16 @@ when "rhel"
   end
 end
 
+execute "create yarn log directories" do
+  user "hdfs"
+  command "hadoop fs -mkdir -p /var/log/hadoop-yarn"
+end
+
+execute "change permissions of yarn log directories" do
+  user "hdfs"
+  command "hadoop fs -chown yarn:mapred /var/log/hadoop-yarn"
+end
+
 service "hadoop-yarn-resourcemanager" do
   action [ :start, :enable ]
 end

@@ -91,6 +91,23 @@ template "#{chef_conf_dir}/mapred-site.xml" do
   variables mapred_site_vars
 end
 
+default[:hadoop][:yarn_site]['yarn.resourcemanager.hostname'] = "TROCAR"
+if node[:hostname].include?('namenode')
+  node.default[:hadoop][:yarn_site]['yarn.resourcemanager.hostname'] = node[:hostname]
+else
+  resourcemanager = search_for_nodes(["hadoop_resourcemanager"], 'fqdn').first
+  node.default[:hadoop][:yarn_site]['yarn.resourcemanager.hostname'] = resourcemanager
+end
+yarn_site_vars = { :options => node[:hadoop][:yarn_site] }
+template "#{chef_conf_dir}/yarn-site.xml" do
+  source "generic-site.xml.erb"
+  mode 0644
+  owner "hdfs"
+  group "hdfs"
+  action :create
+  variables yarn_site_vars
+end
+
 template "#{chef_conf_dir}/hadoop-env.sh" do
   mode 0755
   owner "hdfs"
@@ -132,27 +149,27 @@ template "#{chef_conf_dir}/slaves" do
   variables( :nodes => slaves )
 end
 
-if node[:hadoop][:hdfs_site] && node[:hadoop][:hdfs_site]['topology.script.file.name']
-  topology = { :options => node[:hadoop][:topology] }
-  topology_dir = File.dirname(node[:hadoop][:hdfs_site]['topology.script.file.name'])
+#if node[:hadoop][:hdfs_site] && node[:hadoop][:hdfs_site]['topology.script.file.name']
+#  topology = { :options => node[:hadoop][:topology] }
+#  topology_dir = File.dirname(node[:hadoop][:hdfs_site]['topology.script.file.name'])
+#
+#  directory topology_dir do
+#    mode 0755
+#    owner "hdfs"
+#    group "hdfs"
+#    action :create
+#    recursive true
+#  end
 
-  directory topology_dir do
-    mode 0755
-    owner "hdfs"
-    group "hdfs"
-    action :create
-    recursive true
-  end
-
-  template node[:hadoop][:hdfs_site]['topology.script.file.name'] do
-    source "topology.rb.erb"
-    mode 0755
-    owner "hdfs"
-    group "hdfs"
-    action :create
-    variables topology
-  end
-end
+#  template node[:hadoop][:hdfs_site]['topology.script.file.name'] do
+#    source "topology.rb.erb"
+#    mode 0755
+#    owner "hdfs"
+#    group "hdfs"
+#    action :create
+#    variables topology
+#  end
+#end
 
 if node[:hadoop][:core_site]['hadoop.tmp.dir']
   hadoop_tmp_dir = node[:hadoop][:core_site]['hadoop.tmp.dir']

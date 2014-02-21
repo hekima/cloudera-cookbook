@@ -35,6 +35,26 @@ when "rhel"
   end
 end
 
+node[:hadoop][:yarn_site]['yarn.nodemanager.local-dirs'].split(',').each do |dir|
+  directory dir do
+    mode 0755
+    owner "yarn"
+    group "yarn"
+    action :create
+    recursive true
+  end
+end
+
+node[:hadoop][:yarn_site]['yarn.nodemanager.log-dirs'].split(',').each do |dir|
+  directory dir do
+    mode 0755
+    owner "yarn"
+    group "yarn"
+    action :create
+    recursive true
+  end
+end
+
 service "hadoop-yarn-nodemanager" do
   action [ :start, :enable ]
 end
