@@ -30,6 +30,7 @@ default[:hadoop][:zookeeper_port]         = "2181"
 
 default[:hadoop][:conf_dir]               = "conf.chef"
 
+default[:java][:jdk_version]               = '7'
 default[:hadoop][:hadoop_env]['java_home'] = "/usr/lib/jvm/java-7-openjdk-amd64"
 
 # Provide rack info

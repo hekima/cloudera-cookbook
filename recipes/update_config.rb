@@ -167,6 +167,9 @@ if is_namenode
   service "hadoop-hdfs-namenode" do
     action [ :start, :enable ]
   end
+  service "hadoop-hdfs-zkfc" do
+    action [ :start, :enable ]
+  end
   if first_namenode
     execute "init ha state in zookeeper" do
       user "hdfs"

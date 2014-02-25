@@ -16,5 +16,7 @@ end
 
 depends 'yum'
 depends 'apt'
+depends 'zookeeper'
+depends 'java'
 
 #hello world

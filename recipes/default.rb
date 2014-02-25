@@ -22,10 +22,11 @@
 
 [Chef::Recipe, Chef::Resource].each { |l| l.send :include, ::Extensions }
 
+
+include_recipe "java::default"
 include_recipe "cloudera::repo"
 
 
-package "openjdk-7-jdk"
 package "hadoop-client"
 package "nscd"
 
