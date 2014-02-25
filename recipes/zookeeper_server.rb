@@ -18,11 +18,11 @@
 # limitations under the License.
 #
 
-package "hadoop-zookeeper-server"
+package "zookeeper-server"
 
 case node[:platform_family]
 when "rhel"
-  template "/etc/init.d/hadoop-zookeeper-server" do
+  template "/etc/init.d/zookeeper-server" do
     source "hadoop_zookeeper_server.erb"
     mode 0755
     owner "root"
@@ -33,6 +33,6 @@ when "rhel"
   end
 end
 
-service "hadoop-zookeeper-server" do
+service "zookeeper-server" do
   action [ :start, :enable ]
 end

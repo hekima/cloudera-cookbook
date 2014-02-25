@@ -18,4 +18,4 @@
 # limitations under the License.
 #
 
-package "hadoop-zookeeper"
+package "zookeeper"

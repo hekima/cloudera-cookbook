@@ -44,109 +44,7 @@ directory chef_conf_dir do
   recursive true
 end
 
-if node[:hostname].include?('namenode')
-  node.default[:hadoop][:core_site]['fs.defaultFS'] = "hdfs://#{node[:hostname]}:#{node[:hadoop][:namenode_port]}"
-else
-  namenode = search_for_nodes(["hadoop_namenode"], 'fqdn').first
-  node.default[:hadoop][:core_site]['fs.defaultFS'] = "hdfs://#{namenode}:#{node[:hadoop][:namenode_port]}"
-end
 
-core_site_vars = { :options => node[:hadoop][:core_site] }
-
-
-template "#{chef_conf_dir}/core-site.xml" do
-  source "generic-site.xml.erb"
-  mode 0644
-  owner "hdfs"
-  group "hdfs"
-  action :create
-  variables core_site_vars
-end
-
-hdfs_site_vars = { :options => node[:hadoop][:hdfs_site] }
-#hdfs_site_vars[:options]['fs.default.name'] = "hdfs://#{namenode[:ipaddress]}:#{node[:hadoop][:namenode_port]}"
-# TODO dfs.secondary.http.address should have port made into an attribute - maybe
-#hdfs_site_vars[:options]['dfs.secondary.http.address'] = "#{secondary_namenode[:ipaddress]}:50090" if secondary_namenode
-
-template "#{chef_conf_dir}/hdfs-site.xml" do
-  source "generic-site.xml.erb"
-  mode 0644
-  owner "hdfs"
-  group "hdfs"
-  action :create
-  variables hdfs_site_vars
-end
-
-resourcemanager = find_matching_nodes(["hadoop_resourcemanager"]).first
-
-node.default[:hadoop][:mapred_site]['mapred.job.tracker'] = "#{resourcemanager[:fqdn]}:#{node[:hadoop][:resourcemanager_port]}" if resourcemanager
-mapred_site_vars = { :options => node[:hadoop][:mapred_site] }
-
-template "#{chef_conf_dir}/mapred-site.xml" do
-  source "generic-site.xml.erb"
-  mode 0644
-  owner "hdfs"
-  group "hdfs"
-  action :create
-  variables mapred_site_vars
-end
-
-if node[:hostname].include?('namenode')
-  node.default[:hadoop][:yarn_site]['yarn.resourcemanager.hostname'] = node[:hostname]
-else
-  resourcemanager = search_for_nodes(["hadoop_resourcemanager"], 'fqdn').first
-  node.default[:hadoop][:yarn_site]['yarn.resourcemanager.hostname'] = resourcemanager
-end
-yarn_site_vars = { :options => node[:hadoop][:yarn_site] }
-template "#{chef_conf_dir}/yarn-site.xml" do
-  source "generic-site.xml.erb"
-  mode 0644
-  owner "hdfs"
-  group "hdfs"
-  action :create
-  variables yarn_site_vars
-end
-
-template "#{chef_conf_dir}/hadoop-env.sh" do
-  mode 0755
-  owner "hdfs"
-  group "hdfs"
-  action :create
-  variables( :options => node[:hadoop][:hadoop_env] )
-end
-
-template "#{chef_conf_dir}/log4j.properties" do
-  source "generic.properties.erb"
-  mode 0644
-  owner "hdfs"
-  group "hdfs"
-  action :create
-  variables( :properties => node[:hadoop][:log4j] )
-end
-
-namenode_servers = find_matching_nodes(["hadoop_namenode", "hadoop_secondary_namenode"])
-masters = namenode_servers.map { |node| node[:fqdn] }
-
-template "#{chef_conf_dir}/masters" do
-  source "master_slave.erb"
-  mode 0644
-  owner "hdfs"
-  group "hdfs"
-  action :create
-  variables( :nodes => masters )
-end
-
-datanode_servers = find_matching_nodes(["hadoop_datanode"])
-slaves = datanode_servers.map { |node| node[:fqdn] }
-
-template "#{chef_conf_dir}/slaves" do
-  source "master_slave.erb"
-  mode 0644
-  owner "hdfs"
-  group "hdfs"
-  action :create
-  variables( :nodes => slaves )
-end
 
 #if node[:hadoop][:hdfs_site] && node[:hadoop][:hdfs_site]['topology.script.file.name']
 #  topology = { :options => node[:hadoop][:topology] }
@@ -184,16 +82,37 @@ directory hadoop_tmp_dir do
   recursive true
 end
 
-template "/usr/lib/hadoop-0.20-mapreduce/bin/hadoop-config.sh" do
-  source "hadoop_config.erb"
+directory node[:hadoop][:hdfs_ssh_dir] do
   mode 0755
-  owner "root"
-  group "root"
-  variables(
-    :java_home => node[:hadoop][:hadoop_env]['java_home']
-  )
+  owner "hdfs"
+  group "hdfs"
+  action :create
+  recursive true
 end
 
-execute "update hadoop alternatives" do
-  command "update-alternatives --install /etc/hadoop/conf hadoop-conf /etc/hadoop/#{node[:hadoop][:conf_dir]} 50"
+file "#{node[:hadoop][:hdfs_site]['dfs.ha.fencing.ssh.private-key-files']}" do
+  owner "hdfs"
+  group "hdfs"
+  mode 600
+  content node[:hadoop][:hdfs_private_key]
+end
+
+file "#{node[:hadoop][:hdfs_site]['dfs.ha.fencing.ssh.private-key-files']}.pub" do
+  owner "hdfs"
+  group "hdfs"
+  mode 644
+  content node[:hadoop][:hdfs_public_key]
+end
+
+directory "/home/hdfs/.ssh" do
+  mode 0755
+  owner "hdfs"
+  group "hdfs"
+  action :create
+  recursive true
+end
+
+execute "add key to hdfs known_hosts" do
+  user "hdfs"
+  command "echo 'node[:hadoop][:hdfs_public_key]' >> /home/hdfs/.ssh/known_hosts"
 end

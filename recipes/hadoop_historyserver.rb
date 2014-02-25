@@ -21,6 +21,10 @@
 
 include_recipe "cloudera"
 
+# This should be run after the namenodes, resourcemanager, historyserver, journalnodes and zookeeper
+# are started
+#include_recipe "cloudera::update_config"
+
 package "hadoop-mapreduce-historyserver"
 
 case node[:platform_family]

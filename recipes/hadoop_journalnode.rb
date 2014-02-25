@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: cloudera
-# Recipe:: hadoop_datanode
+# Recipe:: hadoop_journalnode
 #
 # Author:: Cliff Erson (<cerson@me.com>)
 # Author:: Istvan Szukacs (<istvan.szukacs@gmail.com>)
@@ -21,32 +21,27 @@
 #
 
 include_recipe "cloudera"
-include_recipe "cloudera::update_config"
 
-package "hadoop-hdfs-datanode"
+# This should be run after the namenodes, resourcemanager, historyserver, journalnodes and zookeeper
+# are started
+#include_recipe "cloudera::update_config"
 
-#Example hue-plugins-1.2.0.0+114.20-1.noarch
-if node[:hadoop][:hue_plugin_version]
-  package "hue-plugins" do
-    version "#{node[:hadoop][:hue_plugin_version]}-#{node[:hadoop][:hue_plugin_release]}"
-    action :install
-  end
-end
+package "hadoop-hdfs-journalnode"
+
 
 case node[:platform_family]
 when "rhel"
-  template "/etc/init.d/hadoop-#{node[:hadoop][:version]}-datanode" do
+  template "/etc/init.d/hadoop-#{node[:hadoop][:version]}-journalnode" do
     mode 0755
     owner "root"
     group "root"
     variables(
-      :java_home => node[:hadoop][:hadoop_env]['JAVA_HOME']
+      :java_home => node[:hadoop][:hadoop_env]['java_home']
     )
   end
 end
 
-node[:hadoop][:hdfs_site]['dfs.datanode.data.dir'].split(',').each do |dir|
-
+node[:hadoop][:hdfs_site]['dfs.journalnode.edits.dir'].split(',').each do |dir|
   directory dir do
     mode 0755
     owner "hdfs"
@@ -54,14 +49,4 @@ node[:hadoop][:hdfs_site]['dfs.datanode.data.dir'].split(',').each do |dir|
     action :create
     recursive true
   end
-
-  directory "#{dir}/lost+found" do
-    owner "hdfs"
-    group "hdfs"
-  end
-
-end
-
-service "hadoop-hdfs-datanode" do
-  action [ :start, :enable ]
 end

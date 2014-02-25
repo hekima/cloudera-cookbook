@@ -20,6 +20,7 @@
 #
 
 include_recipe "cloudera"
+include_recipe "cloudera::update_config"
 
 package "hadoop-yarn-nodemanager"
 

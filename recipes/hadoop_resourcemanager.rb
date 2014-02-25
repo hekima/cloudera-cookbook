@@ -21,6 +21,10 @@
 
 include_recipe "cloudera"
 
+# This should be run after the namenodes, resourcemanager, historyserver, journalnodes and zookeeper
+# are started
+#include_recipe "cloudera::update_config"
+
 package "hadoop-yarn-resourcemanager"
 
 case node[:platform_family]
@@ -44,8 +48,3 @@ execute "change permissions of yarn log directories" do
   user "hdfs"
   command "hadoop fs -chown yarn:mapred /var/log/hadoop-yarn"
 end
-
-service "hadoop-yarn-resourcemanager" do
-  action [ :start, :enable ]
-end
-

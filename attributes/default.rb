@@ -25,6 +25,8 @@ default[:hadoop][:opsworks]               = false
 
 default[:hadoop][:namenode_port]          = "8020"
 default[:hadoop][:resourcemanager_port]   = "8021"
+default[:hadoop][:journalnode_port]       = "8485"
+default[:hadoop][:zookeeper_port]         = "2181"
 
 default[:hadoop][:conf_dir]               = "conf.chef"
 
@@ -38,10 +40,21 @@ default[:hadoop][:rackaware][:rack]       = "rack0"
 default[:hadoop][:yum_repo_url]           = nil
 default[:hadoop][:yum_repo_key_url]       = nil
 
+default[:hadoop][:core_site]['fs.defaultFS'] = "hdfs://#{node[:hadoop][:hdfs_site]['dfs.nameservices']}"
+default[:hadoop][:core_site]['dfs.permissions.superusergroup'] = "hadoop"
+default[:hadoop][:core_site]['ha.zookeeper.quorum'] = "hadoop"
+
+default[:hadoop][:hdfs_site]['dfs.nameservices'] = "mycluster"
 default[:hadoop][:hdfs_site]['dfs.namenode.name.dir'] = "/mnt/hadoop/dfs/namenode"
 default[:hadoop][:hdfs_site]['dfs.datanode.data.dir'] = "/mnt/hadoop/dfs/datanode"
+default[:hadoop][:hdfs_site]['dfs.journalnode.edits.dir'] = "/mnt/hadoop/dfs/journalnode"
 default[:hadoop][:hdfs_site]['fs.checkpoint.dir'] = "/mnt/hadoop/dfs/checkpoint"
 default[:hadoop][:hdfs_site]['dfs.namenode.rpc-address'] = "0.0.0.0:#{node[:hadoop][:namenode_port]}"
+default[:hadoop][:hdfs_site]['dfs.ha.automatic-failover.enabled'] = true
+default[:hadoop][:hdfs_site]["dfs.client.failover.proxy.provider.#{node[:hadoop][:hdfs_site]['#{node[:hadoop][:hdfs_site]['dfs.nameservices']}']}"] = "0.0.0.0:#{node[:hadoop][:namenode_port]}"
+default[:hadoop][:hdfs_ssh_dir] = '/mnt/hadoop/dfs/ssh'
+default[:hadoop][:hdfs_site]['dfs.ha.fencing.ssh.private-key-files'] = '#{node[:hadoop][:hdfs_ssh_dir]}/hdfs_rsa'
+
 
 default[:hadoop][:mapred_site]['mapreduce.framework.name'] = "yarn"
 
@@ -115,3 +128,7 @@ default[:hadoop][:log4j]['log4j.appender.RFAS.layout']                          
 default[:hadoop][:log4j]['log4j.appender.RFAS.layout.ConversionPattern']                      = '%d{ISO8601} %p %c: %m%n'
 default[:hadoop][:log4j]['log4j.appender.RFAS.MaxFileSize'] 																	= '${hadoop.security.log.maxfilesize}'
 default[:hadoop][:log4j]['log4j.appender.RFAS.MaxBackupIndex'] 																= '${hadoop.security.log.maxbackupindex}'
+
+
+default[:hadoop][:hdfs_public_key] = 'SOME_PUBLIC_KEY'
+default[:hadoop][:hdfs_private_key] = 'SOME_PRIVATE_KEY'
