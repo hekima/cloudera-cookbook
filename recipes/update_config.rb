@@ -163,6 +163,12 @@ execute "update hadoop alternatives" do
   command "update-alternatives --install /etc/hadoop/conf hadoop-conf /etc/hadoop/#{node[:hadoop][:conf_dir]} 50"
 end
 
+if is_journalnode
+  service "hadoop-hdfs-journalnode" do
+    action [ :restart, :enable ]
+  end
+end
+
 if is_namenode
   service "hadoop-hdfs-namenode" do
     action [ :restart, :enable ]
@@ -187,13 +193,16 @@ if is_namenode
   end
 end
 
-if is_journalnode
-  service "hadoop-hdfs-journalnode" do
-    action [ :restart, :enable ]
-  end
-end
-
 if is_resourcemanager
+  execute "create yarn log directories" do
+    user "hdfs"
+    command "hadoop fs -mkdir -p /var/log/hadoop-yarn"
+  end
+
+  execute "change permissions of yarn log directories" do
+    user "hdfs"
+    command "hadoop fs -chown yarn:mapred /var/log/hadoop-yarn"
+  end
   service "hadoop-yarn-resourcemanager" do
     action [ :restart, :enable ]
   end
