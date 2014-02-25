@@ -171,9 +171,18 @@ if is_namenode
     action [ :start, :enable ]
   end
   if first_namenode
+    execute "init namenode" do
+      command "service hadoop-hdfs-namenode init"
+      returns [0,1]
+    end
     execute "init ha state in zookeeper" do
       user "hdfs"
       command "hdfs zkfc -formatZK"
+    end
+  else
+    execute "init standby namenode" do
+      user "hdfs"
+      command "hdfs namenode -bootstrapStandby"
     end
   end
 end

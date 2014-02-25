@@ -52,9 +52,9 @@ default[:hadoop][:hdfs_site]['dfs.journalnode.edits.dir'] = "/mnt/hadoop/dfs/jou
 default[:hadoop][:hdfs_site]['fs.checkpoint.dir'] = "/mnt/hadoop/dfs/checkpoint"
 default[:hadoop][:hdfs_site]['dfs.namenode.rpc-address'] = "0.0.0.0:#{node[:hadoop][:namenode_port]}"
 default[:hadoop][:hdfs_site]['dfs.ha.automatic-failover.enabled'] = true
-default[:hadoop][:hdfs_site]["dfs.client.failover.proxy.provider.#{node[:hadoop][:hdfs_site]['#{node[:hadoop][:hdfs_site]['dfs.nameservices']}']}"] = "0.0.0.0:#{node[:hadoop][:namenode_port]}"
+default[:hadoop][:hdfs_site]["dfs.client.failover.proxy.provider.#{node[:hadoop][:hdfs_site]['dfs.nameservices'}"] = "0.0.0.0:#{node[:hadoop][:namenode_port]}"
 default[:hadoop][:hdfs_ssh_dir] = '/mnt/hadoop/dfs/ssh'
-default[:hadoop][:hdfs_site]['dfs.ha.fencing.ssh.private-key-files'] = '#{node[:hadoop][:hdfs_ssh_dir]}/hdfs_rsa'
+default[:hadoop][:hdfs_site]['dfs.ha.fencing.ssh.private-key-files'] = "#{node[:hadoop][:hdfs_ssh_dir]}/hdfs_rsa"
 
 
 default[:hadoop][:mapred_site]['mapreduce.framework.name'] = "yarn"

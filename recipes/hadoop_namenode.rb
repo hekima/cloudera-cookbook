@@ -60,26 +60,3 @@ node[:hadoop][:hdfs_site]['dfs.namenode.name.dir'].split(',').each do |dir|
     recursive true
   end
 end
-
-first_namenode = false
-if node[:hadoop][:opsworks]
-  if node[:opsworks][:layers][:hadoop_namenode].keys.first == node[:opsworks][:instance][:hostname]
-    first_namenode = true
-  end
-else
-  if node[:fqdn].contains? "namenode1"
-    first_namenode = true
-  end
-end
-
-if first_namenode
-  execute "init namenode" do
-    command "service hadoop-hdfs-namenode init"
-    returns [0,1]
-  end
-else
-  execute "init standby namenode" do
-    user "hdfs"
-    command "hdfs namenode -bootstrapStandby"
-  end
-end
