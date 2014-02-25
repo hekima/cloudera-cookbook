@@ -165,10 +165,10 @@ end
 
 if is_namenode
   service "hadoop-hdfs-namenode" do
-    action [ :start, :enable ]
+    action [ :restart, :enable ]
   end
   service "hadoop-hdfs-zkfc" do
-    action [ :start, :enable ]
+    action [ :restart, :enable ]
   end
   if first_namenode
     execute "init namenode" do
@@ -189,12 +189,12 @@ end
 
 if is_journalnode
   service "hadoop-hdfs-journalnode" do
-    action [ :start, :enable ]
+    action [ :restart, :enable ]
   end
 end
 
 if is_resourcemanager
   service "hadoop-yarn-resourcemanager" do
-    action [ :start, :enable ]
+    action [ :restart, :enable ]
   end
 end
