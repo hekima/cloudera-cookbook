@@ -55,16 +55,16 @@ end
 if node[:hadoop][:opsworks]
   node.default[:hadoop][:hdfs_site]["dfs.ha.namenodes.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}"] = node[:opsworks][:layers][:hadoop_namenode][:instances].keys.sort.join(",")
   node[:opsworks][:layers][:hadoop_namenode][:instances].each do |instance_name, instance|
-    node.default[:hadoop][:hdfs_site]["dfs.namenode.rpc-address.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}.#{instance_name}"] = "hdfs://#{instance_name}:#{node[:hadoop][:namenode_port]}"
-    node.default[:hadoop][:hdfs_site]["dfs.namenode.http-address.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}.#{instance_name}"] = "hdfs://#{instance_name}:50070"
+    node.default[:hadoop][:hdfs_site]["dfs.namenode.rpc-address.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}.#{instance_name}"] = "#{instance_name}:#{node[:hadoop][:namenode_port]}"
+    node.default[:hadoop][:hdfs_site]["dfs.namenode.http-address.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}.#{instance_name}"] = "#{instance_name}:50070"
   end
   node.default[:hadoop][:hdfs_site]['dfs.namenode.shared.edits.dir'] = "qjournal://#{node[:opsworks][:layers][:hadoop_journalnode][:instances].keys.sort.map{|x| x + ':' + node[:hadoop][:journalnode_port]}.join(';')}/#{node[:hadoop][:hdfs_site]['dfs.nameservices']}"
 else
   node.default[:hadoop][:hdfs_site]["dfs.ha.namenodes.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}"] = "namenode1,namenode2"
-  node.default[:hadoop][:hdfs_site]["dfs.namenode.rpc-address.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}.namenode1"] = "hdfs://namenode1:#{node[:hadoop][:namenode_port]}"
-  node.default[:hadoop][:hdfs_site]["dfs.namenode.rpc-address.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}.namenode2"] = "hdfs://namenode2:#{node[:hadoop][:namenode_port]}"
-  node.default[:hadoop][:hdfs_site]["dfs.namenode.http-address.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}.namenode1"] = "hdfs://namenode1:50070"
-  node.default[:hadoop][:hdfs_site]["dfs.namenode.http-address.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}.namenode2"] = "hdfs://namenode2:50070"
+  node.default[:hadoop][:hdfs_site]["dfs.namenode.rpc-address.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}.namenode1"] = "namenode1:#{node[:hadoop][:namenode_port]}"
+  node.default[:hadoop][:hdfs_site]["dfs.namenode.rpc-address.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}.namenode2"] = "namenode2:#{node[:hadoop][:namenode_port]}"
+  node.default[:hadoop][:hdfs_site]["dfs.namenode.http-address.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}.namenode1"] = "namenode1:50070"
+  node.default[:hadoop][:hdfs_site]["dfs.namenode.http-address.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}.namenode2"] = "namenode2:50070"
   node.default[:hadoop][:hdfs_site]['dfs.namenode.shared.edits.dir'] = "qjournal://journalnode1:8485;journalnode2:8485;journalnode3:8485;/#{node[:hadoop][:hdfs_site]['dfs.nameservices']}"
 end
 hdfs_site_vars = { :options => node[:hadoop][:hdfs_site] }
