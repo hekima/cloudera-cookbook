@@ -55,8 +55,15 @@ end
 if node[:hadoop][:opsworks]
   node.default[:hadoop][:hdfs_site]["dfs.ha.namenodes.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}"] = node[:opsworks][:layers][:hadoop_namenode][:instances].keys.sort.join(",")
   node[:opsworks][:layers][:hadoop_namenode][:instances].each do |instance_name, instance|
-    node.default[:hadoop][:hdfs_site]["dfs.namenode.rpc-address.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}.#{instance_name}"] = "#{instance_name}:#{node[:hadoop][:namenode_port]}"
-    node.default[:hadoop][:hdfs_site]["dfs.namenode.http-address.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}.#{instance_name}"] = "#{instance_name}:50070"
+    address = instance_name
+    if instance_name == node[:opsworks][:instance][:hostname]
+      address = "127.0.0.1"
+    end
+    if is_namenode and instance_name == node[:opsworks][:instance][:hostname]
+      address = "0.0.0.0"
+    end
+    node.default[:hadoop][:hdfs_site]["dfs.namenode.rpc-address.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}.#{instance_name}"] = "#{address}:#{node[:hadoop][:namenode_port]}"
+    node.default[:hadoop][:hdfs_site]["dfs.namenode.http-address.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}.#{instance_name}"] = "#{address}:50070"
   end
   node.default[:hadoop][:hdfs_site]['dfs.namenode.shared.edits.dir'] = "qjournal://#{node[:opsworks][:layers][:hadoop_journalnode][:instances].keys.sort.map{|x| x + ':' + node[:hadoop][:journalnode_port]}.join(';')}/#{node[:hadoop][:hdfs_site]['dfs.nameservices']}"
 else
@@ -185,7 +192,7 @@ if is_namenode
   else
     execute "init standby namenode" do
       user "hdfs"
-      command "hdfs namenode -bootstrapStandby"
+      command "hdfs namenode -bootstrapStandby -force"
     end
   end
   service "hadoop-hdfs-namenode" do
