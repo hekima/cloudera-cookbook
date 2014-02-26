@@ -94,14 +94,14 @@ end
 file "#{node[:hadoop][:hdfs_site]['dfs.ha.fencing.ssh.private-key-files']}" do
   owner "hdfs"
   group "hdfs"
-  mode 600
+  mode 0600
   content node[:hadoop][:hdfs_private_key]
 end
 
 file "#{node[:hadoop][:hdfs_site]['dfs.ha.fencing.ssh.private-key-files']}.pub" do
   owner "hdfs"
   group "hdfs"
-  mode 644
+  mode 0644
   content node[:hadoop][:hdfs_public_key]
 end
 
