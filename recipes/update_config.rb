@@ -180,7 +180,7 @@ if is_namenode
     end
     execute "init ha state in zookeeper" do
       user "hdfs"
-      command "hdfs zkfc -formatZK"
+      command "hdfs zkfc -formatZK -force"
     end
   else
     execute "init standby namenode" do
