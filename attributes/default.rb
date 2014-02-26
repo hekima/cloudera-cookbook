@@ -54,6 +54,7 @@ default[:hadoop][:hdfs_site]['dfs.namenode.rpc-address'] = "0.0.0.0:#{node[:hado
 default[:hadoop][:hdfs_site]['dfs.ha.automatic-failover.enabled'] = true
 default[:hadoop][:hdfs_site]["dfs.client.failover.proxy.provider.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}"] = "0.0.0.0:#{node[:hadoop][:namenode_port]}"
 default[:hadoop][:hdfs_ssh_dir] = '/mnt/hadoop/dfs/ssh'
+default[:hadoop][:hdfs_site]['dfs.ha.fencing.methods'] = 'sshfence'
 default[:hadoop][:hdfs_site]['dfs.ha.fencing.ssh.private-key-files'] = "#{node[:hadoop][:hdfs_ssh_dir]}/hdfs_rsa"
 
 

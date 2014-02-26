@@ -9,7 +9,7 @@ first_namenode = false
 if node[:hadoop][:opsworks]
   if node[:opsworks][:instance][:layers].include?('hadoop_namenode')
     is_namenode = true
-    if node[:opsworks][:layers][:hadoop_namenode].keys.first == node[:opsworks][:instance][:hostname]
+    if node[:opsworks][:layers][:hadoop_namenode][:instances].keys.sort.first == node[:opsworks][:instance][:hostname]
       first_namenode = true
     end
   end
@@ -36,7 +36,7 @@ end
 
 # Setting the core-site.xml
 if node[:hadoop][:opsworks]
-  node.default[:hadoop][:core_site]['ha.zookeeper.quorum'] = node[:opsworks][:layers][:zookeeper].keys.map{|x| x + ':' + node[:hadoop][:zookeeper_port]}.join(',')
+  node.default[:hadoop][:core_site]['ha.zookeeper.quorum'] = node[:opsworks][:layers][:zookeeper][:instances].keys.sort.map{|x| x + ':' + node[:hadoop][:zookeeper_port]}.join(',')
 else
   node.default[:hadoop][:core_site]['ha.zookeeper.quorum'] = "zookeeper1:2181,zookeeper2:2181,zookeeper3:2181"
 end
@@ -53,12 +53,12 @@ end
 
 # Setting the hdfs-site.xml
 if node[:hadoop][:opsworks]
-  node.default[:hadoop][:hdfs_site]["dfs.ha.namenodes.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}"] = node[:opsworks][:layers][:hadoop_namenode][:instances].keys.join(",")
+  node.default[:hadoop][:hdfs_site]["dfs.ha.namenodes.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}"] = node[:opsworks][:layers][:hadoop_namenode][:instances].keys.sort.join(",")
   node[:opsworks][:layers][:hadoop_namenode][:instances].each do |instance_name, instance|
     node.default[:hadoop][:hdfs_site]["dfs.namenode.rpc-address.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}.#{instance_name}"] = "hdfs://#{instance_name}:#{node[:hadoop][:namenode_port]}"
     node.default[:hadoop][:hdfs_site]["dfs.namenode.http-address.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}.#{instance_name}"] = "hdfs://#{instance_name}:50070"
   end
-  node.default[:hadoop][:hdfs_site]['dfs.namenode.shared.edits.dir'] = "qjournal://#{node[:opsworks][:layers][:hadoop_journalnode].keys.map{|x| x + ':' + node[:hadoop][:journalnode_port]}.join(';')}/#{node[:hadoop][:hdfs_site]['dfs.nameservices']}"
+  node.default[:hadoop][:hdfs_site]['dfs.namenode.shared.edits.dir'] = "qjournal://#{node[:opsworks][:layers][:hadoop_journalnode][:instances].keys.sort.map{|x| x + ':' + node[:hadoop][:journalnode_port]}.join(';')}/#{node[:hadoop][:hdfs_site]['dfs.nameservices']}"
 else
   node.default[:hadoop][:hdfs_site]["dfs.ha.namenodes.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}"] = "namenode1,namenode2"
   node.default[:hadoop][:hdfs_site]["dfs.namenode.rpc-address.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}.namenode1"] = "hdfs://namenode1:#{node[:hadoop][:namenode_port]}"
@@ -173,16 +173,10 @@ if is_journalnode
 end
 
 if is_namenode
-  service "hadoop-hdfs-namenode" do
-    action [ :restart, :enable ]
-  end
-  service "hadoop-hdfs-zkfc" do
-    action [ :restart, :enable ]
-  end
   if first_namenode
     execute "init namenode" do
-      command "service hadoop-hdfs-namenode init"
-      returns [0,1]
+      user "hdfs"
+      command "hdfs namenode -format -force"
     end
     execute "init ha state in zookeeper" do
       user "hdfs"
@@ -193,6 +187,12 @@ if is_namenode
       user "hdfs"
       command "hdfs namenode -bootstrapStandby"
     end
+  end
+  service "hadoop-hdfs-namenode" do
+    action [ :restart, :enable ]
+  end
+  service "hadoop-hdfs-zkfc" do
+    action [ :restart, :enable ]
   end
 end
 
