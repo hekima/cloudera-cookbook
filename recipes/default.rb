@@ -105,7 +105,7 @@ file "#{node[:hadoop][:hdfs_site]['dfs.ha.fencing.ssh.private-key-files']}.pub" 
   content node[:hadoop][:hdfs_public_key]
 end
 
-directory "/home/hdfs/.ssh" do
+directory "/var/lib/hadoop-hdfs/.ssh" do
   mode 0755
   owner "hdfs"
   group "hdfs"
@@ -115,5 +115,5 @@ end
 
 execute "add key to hdfs known_hosts" do
   user "hdfs"
-  command "echo 'node[:hadoop][:hdfs_public_key]' >> /home/hdfs/.ssh/known_hosts"
+  command "cat #{node[:hadoop][:hdfs_site]['dfs.ha.fencing.ssh.private-key-files']}.pub >> /var/lib/hadoop-hdfs/.ssh/authorized_keys"
 end
