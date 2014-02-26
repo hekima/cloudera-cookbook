@@ -1,3 +1,5 @@
+[Chef::Recipe, Chef::Resource].each { |l| l.send :include, ::Extensions }
+
 # variables needed to guide the execution flow
 chef_conf_dir = "/etc/hadoop/#{node[:hadoop][:conf_dir]}"
 is_namenode = false
