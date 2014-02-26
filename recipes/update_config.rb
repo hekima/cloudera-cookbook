@@ -56,12 +56,12 @@ if node[:hadoop][:opsworks]
   node.default[:hadoop][:hdfs_site]["dfs.ha.namenodes.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}"] = node[:opsworks][:layers][:hadoop_namenode][:instances].keys.sort.join(",")
   node[:opsworks][:layers][:hadoop_namenode][:instances].each do |instance_name, instance|
     address = instance_name
-    if instance_name == node[:opsworks][:instance][:hostname]
-      address = "127.0.0.1"
-    end
-    if is_namenode and instance_name == node[:opsworks][:instance][:hostname]
-      address = "0.0.0.0"
-    end
+    #if instance_name == node[:opsworks][:instance][:hostname]
+    #  address = "127.0.0.1"
+    #end
+    #if is_namenode and instance_name == node[:opsworks][:instance][:hostname]
+    #  address = "0.0.0.0"
+    #end
     node.default[:hadoop][:hdfs_site]["dfs.namenode.rpc-address.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}.#{instance_name}"] = "#{address}:#{node[:hadoop][:namenode_port]}"
     node.default[:hadoop][:hdfs_site]["dfs.namenode.http-address.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}.#{instance_name}"] = "#{address}:50070"
   end

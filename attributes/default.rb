@@ -50,7 +50,6 @@ default[:hadoop][:core_site]['ha.zookeeper.quorum'] = "hadoop"
 default[:hadoop][:hdfs_site]['dfs.namenode.name.dir'] = "/mnt/hadoop/dfs/namenode"
 default[:hadoop][:hdfs_site]['dfs.datanode.data.dir'] = "/mnt/hadoop/dfs/datanode"
 default[:hadoop][:hdfs_site]['dfs.journalnode.edits.dir'] = "/mnt/hadoop/dfs/journalnode"
-default[:hadoop][:hdfs_site]['dfs.namenode.rpc-address'] = "0.0.0.0:#{node[:hadoop][:namenode_port]}"
 default[:hadoop][:hdfs_site]['dfs.ha.automatic-failover.enabled'] = true
 default[:hadoop][:hdfs_site]["dfs.client.failover.proxy.provider.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}"] = "org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider"
 default[:hadoop][:hdfs_ssh_dir] = '/mnt/hadoop/dfs/ssh'
