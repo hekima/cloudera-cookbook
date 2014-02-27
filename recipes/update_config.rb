@@ -53,7 +53,7 @@ end
 
 # Setting the hdfs-site.xml
 if node[:hadoop][:opsworks]
-  node.default[:hadoop][:hdfs_site]["dfs.ha.namenodes.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}"] = node[:opsworks][:layers][:hadoop_namenode][:instances].values.map{|x| x[:private_dns_name]}.sort.join(",")
+  node.default[:hadoop][:hdfs_site]["dfs.ha.namenodes.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}"] = node[:opsworks][:layers][:hadoop_namenode][:instances].keys.sort.join(",")
   node[:opsworks][:layers][:hadoop_namenode][:instances].each do |instance_name, instance|
     address = instance[:private_dns_name]
     #if instance_name == node[:opsworks][:instance][:hostname]
