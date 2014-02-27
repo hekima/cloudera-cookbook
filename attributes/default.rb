@@ -44,8 +44,10 @@ default[:hadoop][:yum_repo_key_url]       = nil
 default[:hadoop][:hdfs_site]['dfs.nameservices'] = "mycluster"
 
 default[:hadoop][:core_site]['fs.defaultFS'] = "hdfs://#{node[:hadoop][:hdfs_site]['dfs.nameservices']}"
-default[:hadoop][:core_site]['dfs.permissions.superusergroup'] = "hadoop"
-default[:hadoop][:core_site]['ha.zookeeper.quorum'] = "hadoop"
+default[:hadoop][:core_site]['dfs.permissions.superusergroup'] = 'hadoop'
+default[:hadoop][:core_site]['ha.zookeeper.quorum'] = 'hadoop'
+default[:hadoop][:core_site]['hadoop.proxyuser.hue.hosts'] = '*'
+default[:hadoop][:core_site]['hadoop.proxyuser.hue.groups'] = '*'
 
 default[:hadoop][:hdfs_site]['dfs.namenode.name.dir'] = "/mnt/hadoop/dfs/namenode"
 default[:hadoop][:hdfs_site]['dfs.datanode.data.dir'] = "/mnt/hadoop/dfs/datanode"
@@ -54,6 +56,7 @@ default[:hadoop][:hdfs_site]['dfs.ha.automatic-failover.enabled'] = true
 default[:hadoop][:hdfs_site]["dfs.client.failover.proxy.provider.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}"] = "org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider"
 default[:hadoop][:hdfs_ssh_dir] = '/mnt/hadoop/dfs/ssh'
 default[:hadoop][:hdfs_site]['dfs.ha.fencing.methods'] = 'sshfence'
+default[:hadoop][:hdfs_site]['dfs.webhdfs.enabled'] = 'true'
 default[:hadoop][:hdfs_site]['dfs.ha.fencing.ssh.private-key-files'] = "#{node[:hadoop][:hdfs_ssh_dir]}/hdfs_rsa"
 
 
@@ -66,6 +69,17 @@ default[:hadoop][:yarn_site]['yarn.log.aggregation.enable'] = true
 default[:hadoop][:yarn_site]['yarn.nodemanager.local-dirs'] = "/mnt/hadoop/yarn/local"
 default[:hadoop][:yarn_site]['yarn.nodemanager.log-dirs'] = "/mnt/hadoop/yarn/logs"
 default[:hadoop][:yarn_site]['yarn.nodemanager.remote-app-log-dir'] = "hdfs://var/log/hadoop-yarn/app"
+
+default[:hue][:hue_server][:secretkey] = 'SOMESECRETKEY'
+default[:hue][:hue_server][:http_host] = '0.0.0.0'
+default[:hue][:hue_server][:http_port] = '8888'
+default[:hue][:hue_server][:] = ''
+default[:hue][:hue_server][:] = ''
+default[:hue][:hue_server][:] = ''
+default[:hue][:hue_server][:] = ''
+default[:hue][:hue_server][:] = ''
+default[:hue][:hue_server][:] = ''
+
 
 
 

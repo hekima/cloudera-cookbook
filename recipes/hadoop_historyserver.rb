@@ -20,6 +20,7 @@
 #
 
 include_recipe "cloudera"
+include_recipe "cloudera::update_config"
 
 # This should be run after the namenodes, resourcemanager, historyserver, journalnodes and zookeeper
 # are started
@@ -40,6 +41,6 @@ when "rhel"
 end
 
 service "hadoop-mapreduce-historyserver" do
-  action [ :start, :enable ]
+  action [ :restart, :enable ]
 end
 

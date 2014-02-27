@@ -18,12 +18,15 @@
 # limitations under the License.
 #
 
+[Chef::Recipe, Chef::Resource].each { |l| l.send :include, ::Extensions }
+
+include_recipe "java::default"
 include_recipe "cloudera::repo"
 
 package "oozie"
 
 execute "update oozie alternatives" do
-  command "update-alternatives --install /etc/oozie/conf oozie-tomcat-conf /etc/oozie/tomcat-conf.http 50"
+  command "update-alternatives --install /etc/oozie/tomcat-conf oozie-tomcat-conf /etc/oozie/tomcat-conf.http 50"
 end
 
 service "oozie" do

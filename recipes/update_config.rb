@@ -104,6 +104,7 @@ end
 
 resourcemanager = search_for_nodes(["hadoop_resourcemanager"], 'fqdn').first
 node.default[:hadoop][:yarn_site]['yarn.resourcemanager.hostname'] = resourcemanager
+node.default[:hadoop][:yarn_site]['yarn.nodemanager.hostname'] = node[:opsworks][:instance][:private_dns_name]
 yarn_site_vars = { :options => node[:hadoop][:yarn_site] }
 template "#{chef_conf_dir}/yarn-site.xml" do
   source "generic-site.xml.erb"
