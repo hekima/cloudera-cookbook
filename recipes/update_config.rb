@@ -9,7 +9,7 @@ first_namenode = false
 if node[:hadoop][:opsworks]
   if node[:opsworks][:instance][:layers].include?('hadoop_namenode')
     is_namenode = true
-    if node[:opsworks][:layers][:hadoop_namenode][:instances].keys.sort.first == node[:opsworks][:instance][:hostname]
+    if node[:opsworks][:layers][:hadoop_namenode][:instances].values.map{|x| x[:private_dns_name]}.sort.first == node[:opsworks][:instance][:hostname]
       first_namenode = true
     end
   end
@@ -36,7 +36,7 @@ end
 
 # Setting the core-site.xml
 if node[:hadoop][:opsworks]
-  node.default[:hadoop][:core_site]['ha.zookeeper.quorum'] = node[:opsworks][:layers][:zookeeper][:instances].keys.sort.map{|x| x + ':' + node[:hadoop][:zookeeper_port]}.join(',')
+  node.default[:hadoop][:core_site]['ha.zookeeper.quorum'] = node[:opsworks][:layers][:zookeeper][:instances].values.map{|x| x[:private_dns_name] + ':' + node[:hadoop][:zookeeper_port]}.sort.join(',')
 else
   node.default[:hadoop][:core_site]['ha.zookeeper.quorum'] = "zookeeper1:2181,zookeeper2:2181,zookeeper3:2181"
 end
@@ -53,7 +53,7 @@ end
 
 # Setting the hdfs-site.xml
 if node[:hadoop][:opsworks]
-  node.default[:hadoop][:hdfs_site]["dfs.ha.namenodes.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}"] = node[:opsworks][:layers][:hadoop_namenode][:instances].keys.sort.join(",")
+  node.default[:hadoop][:hdfs_site]["dfs.ha.namenodes.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}"] = node[:opsworks][:layers][:hadoop_namenode][:instances].values.map{|x| x[:private_dns_name]}.sort.join(",")
   node[:opsworks][:layers][:hadoop_namenode][:instances].each do |instance_name, instance|
     address = instance_name
     #if instance_name == node[:opsworks][:instance][:hostname]
@@ -65,7 +65,7 @@ if node[:hadoop][:opsworks]
     node.default[:hadoop][:hdfs_site]["dfs.namenode.rpc-address.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}.#{instance_name}"] = "#{address}:#{node[:hadoop][:namenode_port]}"
     node.default[:hadoop][:hdfs_site]["dfs.namenode.http-address.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}.#{instance_name}"] = "#{address}:50070"
   end
-  node.default[:hadoop][:hdfs_site]['dfs.namenode.shared.edits.dir'] = "qjournal://#{node[:opsworks][:layers][:hadoop_journalnode][:instances].keys.sort.map{|x| x + ':' + node[:hadoop][:journalnode_port]}.join(';')}/#{node[:hadoop][:hdfs_site]['dfs.nameservices']}"
+  node.default[:hadoop][:hdfs_site]['dfs.namenode.shared.edits.dir'] = "qjournal://#{node[:opsworks][:layers][:hadoop_journalnode][:instances].values.map{|x| x[:private_dns_name] + ':' + node[:hadoop][:journalnode_port]}.sort.join(';')}/#{node[:hadoop][:hdfs_site]['dfs.nameservices']}"
 else
   node.default[:hadoop][:hdfs_site]["dfs.ha.namenodes.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}"] = "namenode1,namenode2"
   node.default[:hadoop][:hdfs_site]["dfs.namenode.rpc-address.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}.namenode1"] = "namenode1:#{node[:hadoop][:namenode_port]}"
