@@ -73,15 +73,6 @@ default[:hadoop][:yarn_site]['yarn.nodemanager.remote-app-log-dir'] = "hdfs://va
 default[:hue][:hue_server][:secretkey] = 'SOMESECRETKEY'
 default[:hue][:hue_server][:http_host] = '0.0.0.0'
 default[:hue][:hue_server][:http_port] = '8888'
-default[:hue][:hue_server][:] = ''
-default[:hue][:hue_server][:] = ''
-default[:hue][:hue_server][:] = ''
-default[:hue][:hue_server][:] = ''
-default[:hue][:hue_server][:] = ''
-default[:hue][:hue_server][:] = ''
-
-
-
 
 
 default[:hadoop][:log4j]['hadoop.root.logger']                                                 = 'INFO,console'
