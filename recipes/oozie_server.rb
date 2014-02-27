@@ -22,38 +22,10 @@ include_recipe "cloudera::repo"
 
 package "oozie"
 
-oozie_site_vars = { :options => node[:hadoop][:oozie_site] }
-
-template "/etc/oozie/oozie-site.xml" do
-  source "generic-site.xml.erb"
-  mode 0755
-  owner "root"
-  group "root"
-  action :create
-  variables oozie_site_vars
-end
-
-template "/usr/lib/oozie/bin/oozied.sh" do
-  source "oozied.sh.erb"
-  mode 0755
-  owner "root"
-  group "root"
-  action :create
-end
-
-unless File.exists?("/etc/oozie/oozieServerIsConfigured.chefFlag") 
-  remote_file "/tmp/ext-2.2.zip" do
-    source "http://extjs.com/deploy/ext-2.2.zip"
-  end
-  
-  remote_file "/tmp/mysql-connector-java-5.1.21.jar" do
-    source "http://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.21/mysql-connector-java-5.1.21.jar"
-  end
-  
-  execute "sudo -u oozie /usr/lib/oozie/bin/oozie-setup.sh -jars /tmp/mysql-connector-java-5.1.21.jar -extjs /tmp/ext-2.2.zip"
-  execute "sudo touch /etc/oozie/oozieServerIsConfigured.chefFlag"
+execute "update oozie alternatives" do
+  command "update-alternatives --install /etc/oozie/conf oozie-tomcat-conf /etc/oozie/tomcat-conf.http 50"
 end
 
 service "oozie" do
-  action [ :start, :enable ]
+  action [ :restart, :enable ]
 end
