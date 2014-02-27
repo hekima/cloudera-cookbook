@@ -55,7 +55,7 @@ end
 if node[:hadoop][:opsworks]
   node.default[:hadoop][:hdfs_site]["dfs.ha.namenodes.#{node[:hadoop][:hdfs_site]['dfs.nameservices']}"] = node[:opsworks][:layers][:hadoop_namenode][:instances].values.map{|x| x[:private_dns_name]}.sort.join(",")
   node[:opsworks][:layers][:hadoop_namenode][:instances].each do |instance_name, instance|
-    address = instance_name
+    address = instance[:private_dns_name]
     #if instance_name == node[:opsworks][:instance][:hostname]
     #  address = "127.0.0.1"
     #end
@@ -102,12 +102,8 @@ template "#{chef_conf_dir}/mapred-site.xml" do
   variables mapred_site_vars
 end
 
-if node[:hostname].include?('namenode')
-  node.default[:hadoop][:yarn_site]['yarn.resourcemanager.hostname'] = node[:hostname]
-else
-  resourcemanager = search_for_nodes(["hadoop_resourcemanager"], 'fqdn').first
-  node.default[:hadoop][:yarn_site]['yarn.resourcemanager.hostname'] = resourcemanager
-end
+resourcemanager = search_for_nodes(["hadoop_resourcemanager"], 'fqdn').first
+node.default[:hadoop][:yarn_site]['yarn.resourcemanager.hostname'] = resourcemanager
 yarn_site_vars = { :options => node[:hadoop][:yarn_site] }
 template "#{chef_conf_dir}/yarn-site.xml" do
   source "generic-site.xml.erb"
