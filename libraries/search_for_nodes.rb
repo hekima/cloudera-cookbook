@@ -16,8 +16,8 @@ module Extensions
         if not node[:opsworks][:layers][type].nil?
           node[:opsworks][:layers][type][:instances].each do |instance_name, instance|
             result_map[instance_name] = JSON.parse(JSON.dump(instance))
-            result_map[instance_name]["fqdn"] = instance_name
-            result_map[instance_name][:fqdn] = instance_name
+            result_map[instance_name]["fqdn"] = instance[:private_dns_name]
+            result_map[instance_name][:fqdn] = instance[:private_dns_name]
             result_map[instance_name]["hostname"] = instance_name
             result_map[instance_name][:hostname] = instance_name
             Chef::Log.debug("Found node '#{instance_name}' of type '#{type}'")
