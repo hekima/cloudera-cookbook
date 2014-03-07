@@ -26,6 +26,8 @@
 include_recipe "java::default"
 include_recipe "cloudera::repo"
 
+include_recipe "cloudera::impala"
+
 
 package "hadoop-client"
 package "nscd"
@@ -35,9 +37,18 @@ service "nscd" do
 end
 
 chef_conf_dir = "/etc/hadoop/#{node[:hadoop][:conf_dir]}"
+impala_chef_conf_dir = "/etc/impala/#{node[:hadoop][:conf_dir]}"
 
 
 directory chef_conf_dir do
+  mode 0755
+  owner "root"
+  group "root"
+  action :create
+  recursive true
+end
+
+directory impala_conf_dir do
   mode 0755
   owner "root"
   group "root"

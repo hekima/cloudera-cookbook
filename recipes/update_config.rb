@@ -167,6 +167,18 @@ template "/usr/lib/hadoop-0.20-mapreduce/bin/hadoop-config.sh" do
   )
 end
 
+execute "create impala config dir" do
+  command "mkdir -p /etc/impala/#{node[:hadoop][:conf_dir]}"
+end
+
+execute "copy hadoop config to impala" do
+  command "cp -r /etc/hadoop/#{node[:hadoop][:conf_dir]}/* /etc/impala/#{node[:hadoop][:conf_dir]}/"
+end
+
 execute "update hadoop alternatives" do
   command "update-alternatives --install /etc/hadoop/conf hadoop-conf /etc/hadoop/#{node[:hadoop][:conf_dir]} 50"
+end
+
+execute "update impala alternatives" do
+  command "update-alternatives --install /etc/impala/conf impala-conf /etc/impala/#{node[:hadoop][:conf_dir]} 50"
 end

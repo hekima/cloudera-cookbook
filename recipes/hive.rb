@@ -25,10 +25,10 @@ package "hive"
 
 mysql_server = node[:opsworks][:layers][:mysql][:instances].values[0][:private_ip]
 
-if node[:opsworks][:instance][:layers].include?('hadoop_hive_metastore') do
+if node[:opsworks][:instance][:layers].include?('hive_metastore') do
   metastore = node[:opsworks][:instance][:private_ip]
 else
-  metastore = node[:opsworks][:layers][:hadoop_hive_metastore][:instances].values[0][:private_ip]
+  metastore = node[:opsworks][:layers][:hive_metastore][:instances].values[0][:private_ip]
 end
 
 node.default[:hadoop][:hive_site]['javax.jdo.option.ConnectionURL'] = "jdbc:mysql://#{mysql_server}/metastore"

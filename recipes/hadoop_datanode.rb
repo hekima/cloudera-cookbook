@@ -63,5 +63,5 @@ node[:hadoop][:hdfs_site]['dfs.datanode.data.dir'].split(',').each do |dir|
 end
 
 service "hadoop-hdfs-datanode" do
-  action [ :start, :enable ]
+  action [ :restart, :enable ]
 end

@@ -21,6 +21,7 @@
 
 default[:hadoop][:version]                = "2.2"
 default[:hadoop][:release]                = "5.0.0b2"
+default[:hadoop][:impala_release]         = "1.2.4"
 default[:hadoop][:opsworks]               = false
 
 default[:hadoop][:namenode_port]          = "8020"
@@ -58,6 +59,10 @@ default[:hadoop][:hdfs_ssh_dir] = '/mnt/hadoop/dfs/ssh'
 default[:hadoop][:hdfs_site]['dfs.ha.fencing.methods'] = 'sshfence'
 default[:hadoop][:hdfs_site]['dfs.webhdfs.enabled'] = 'true'
 default[:hadoop][:hdfs_site]['dfs.ha.fencing.ssh.private-key-files'] = "#{node[:hadoop][:hdfs_ssh_dir]}/hdfs_rsa"
+default[:hadoop][:hdfs_site]['dfs.datanode.hdfs-blocks-metadata.enabled'] = 'true'
+default[:hadoop][:hdfs_site]['dfs.client.read.shortcircuit'] = 'true'
+default[:hadoop][:hdfs_site]['dfs.domain.socket.path'] = '/var/run/hadoop-hdfs/dn._PORT'
+default[:hadoop][:hdfs_site]['dfs.client.file-block-storage-locations.timeout'] = '3000'
 
 
 default[:hadoop][:mapred_site]['mapreduce.framework.name'] = "yarn"
@@ -84,6 +89,7 @@ default[:hadoop][:hive_site]['hive.support.concurrency'] = 'true'
 default[:hadoop][:hive_site]['hive.zookeeper.client.port'] = node[:hadoop][:zookeeper_port]
 default[:hadoop][:hive_site]['hive.server2.thrift.port'] = '10000'
 default[:hadoop][:hive_site]['hive.metastore.warehouse.dir'] = '/user/hive/warehouse'
+default[:hadoop][:hive_site]['hive.metastore.client.socket.timeout'] = '3600'
 default[:hadoop][:hive_site]['hive.exec.scratchdir'] = '/user/hive/tmp'
 
 default[:hadoop][:hive_server_env]['HADOOP_MAPRED_HOME'] = "/usr/lib/hadoop-mapreduce"

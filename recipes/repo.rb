@@ -31,10 +31,18 @@ when "debian"
   apt_repository "cloudera-cdh#{node[:hadoop][:release]}" do
     uri "[arch=amd64] http://archive.cloudera.com/cdh5/ubuntu/precise/amd64/cdh"
     key "http://archive.cloudera.com/cdh5/ubuntu/precise/amd64/cdh/archive.key"
-#    distribution "#{node[:lsb][:codename]}-cdh#{node[:hadoop][:release]}"
     distribution "precise-cdh#{node[:hadoop][:release]}"
     components [ "contrib" ]
     deb_src true
     action :add
   end
+
+    apt_repository "cloudera-impala#{node[:hadoop][:impala_release]}" do
+      uri "[arch=amd64] http://archive.cloudera.com/impala/ubuntu/precise/amd64/impala/"
+      key "http://archive.cloudera.com/impala/ubuntu/precise/amd64/impala/archive.key"
+      distribution "precise-impala#{node[:hadoop][:impala_release]}"
+      components [ "contrib" ]
+      deb_src true
+      action :add
+    end
 end

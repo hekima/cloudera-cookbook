@@ -31,7 +31,6 @@ when "rhel"
   execute "copy_connector" do
     command "ln -s /usr/share/java/mysql-connector-java.jar /usr/lib/hive/lib/mysql-connector-java.jar"
   end
-end
 when "debian"
   package "libmysql-java"
   execute "copy_connector" do
