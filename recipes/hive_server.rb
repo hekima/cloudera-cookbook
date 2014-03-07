@@ -19,6 +19,7 @@
 #
 
 include_recipe "cloudera::repo"
+include_recipe "cloudera::hive"
 
 package "hive-server2"
 

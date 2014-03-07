@@ -19,7 +19,7 @@
 #
 
 include_recipe "cloudera::repo"
-include_recipe "hive"
+include_recipe "cloudera::hive"
 
 package "hadoop-hive-metastore"
 
