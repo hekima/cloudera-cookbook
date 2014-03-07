@@ -47,11 +47,14 @@ template "/etc/hive/conf/hive-site.xml" do
 end
 
 execute "create hive home" do
+  user "hdfs"
   command "hadoop fs -mkdir -p #{node[:hadoop][:hive_site]['hive.metastore.warehouse.dir']}"
 end
 execute "chown hive home" do
+  user "hdfs"
   command "hadoop fs -chown hive #{node[:hadoop][:hive_site]['hive.metastore.warehouse.dir']}"
 end
 execute "chmod hive home" do
+  user "hdfs"
   command "hadoop fs -chmod 1777 #{node[:hadoop][:hive_site]['hive.metastore.warehouse.dir']}"
 end

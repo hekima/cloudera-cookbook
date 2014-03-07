@@ -84,6 +84,7 @@ default[:hadoop][:hive_site]['hive.support.concurrency'] = 'true'
 default[:hadoop][:hive_site]['hive.zookeeper.client.port'] = node[:hadoop][:zookeeper_port]
 default[:hadoop][:hive_site]['hive.server2.thrift.port'] = '10000'
 default[:hadoop][:hive_site]['hive.metastore.warehouse.dir'] = '/user/hive/warehouse'
+default[:hadoop][:hive_site]['hive.exec.scratchdir'] = '/user/hive/tmp'
 
 default[:hadoop][:hive_server_env]['HADOOP_MAPRED_HOME'] = "/usr/lib/hadoop-mapreduce"
 
