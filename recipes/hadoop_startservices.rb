@@ -56,12 +56,35 @@ if is_namenode
   service "hadoop-hdfs-zkfc" do
     action [ :restart, :enable ]
   end
+
+  execute "create hdfs home" do
+    command "hadoop fs -mkdir -p /user/hdfs"
+  end
+  execute "chown hdfs home" do
+    command "hadoop fs -chown hdfs /user/hdfs"
+  end
+
+  execute "create ubuntu home" do
+    command "hadoop fs -mkdir -p /user/ubuntu"
+  end
+  execute "chown ubuntu home" do
+    command "hadoop fs -chown ubuntu /user/ubuntu"
+  end
 end
 
 if is_resourcemanager
   execute "create yarn log directories" do
-    user "hdfs"
     command "hadoop fs -mkdir -p /var/log/hadoop-yarn"
+  end
+  execute "chown yarn log directories" do
+    command "hadoop fs -chown yarn /var/log/hadoop-yarn"
+  end
+
+  execute "create yarn home" do
+    command "hadoop fs -mkdir -p /user/yarn"
+  end
+  execute "create yarn home" do
+    command "hadoop fs -chown yarn /user/yarn"
   end
 
   execute "change permissions of yarn log directories" do

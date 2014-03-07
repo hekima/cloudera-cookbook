@@ -20,7 +20,7 @@
 
 include_recipe "cloudera::repo"
 
-package "hadoop-hive-server"
+package "hive-server2"
 
 case node[:platform_family]
 when "rhel"
@@ -30,23 +30,21 @@ when "rhel"
     owner "root"
     group "root"
     variables(
-      :java_home => node[:hadoop][:hadoop_env]['java_home']
+      :JAVA_HOME => node[:hadoop][:hadoop_env]['JAVA_HOME']
     )
   end
 end
 
-hive_env_vars = { :options => node[:hive][:hive_env_options] }
-
-template "/etc/hive/conf/hive-env.sh" do
+hive_server_env_vars = { :options => node[:hadoop][:hive_server_env] }
+template "/etc/default/hive-server2" do
   source "hive-env.sh.erb"
   mode 0644
   owner "root"
   group "root"
   action :create
-  variables hive_env_vars
+  variables hive_server_env_vars
 end
 
-
-service "hadoop-hive-server" do
-  action [ :start, :enable ]
+service "hive-server2" do
+  action [ :restart, :enable ]
 end

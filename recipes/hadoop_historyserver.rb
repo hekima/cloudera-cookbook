@@ -35,7 +35,7 @@ when "rhel"
     owner "root"
     group "root"
     variables(
-      :java_home => node[:hadoop][:hadoop_env]['java_home']
+      :JAVA_HOME => node[:hadoop][:hadoop_env]['JAVA_HOME']
     )
   end
 end

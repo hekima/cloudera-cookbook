@@ -31,7 +31,8 @@ default[:hadoop][:zookeeper_port]         = "2181"
 default[:hadoop][:conf_dir]               = "conf.chef"
 
 default[:java][:jdk_version]               = '7'
-default[:hadoop][:hadoop_env]['java_home'] = "/usr/lib/jvm/java-7-openjdk-amd64"
+
+default[:hadoop][:hadoop_env]['JAVA_HOME'] = "/usr/lib/jvm/java-7-openjdk-amd64"
 
 # Provide rack info
 default[:hadoop][:rackaware][:datacenter] = "default"
@@ -45,7 +46,6 @@ default[:hadoop][:hdfs_site]['dfs.nameservices'] = "mycluster"
 
 default[:hadoop][:core_site]['fs.defaultFS'] = "hdfs://#{node[:hadoop][:hdfs_site]['dfs.nameservices']}"
 default[:hadoop][:core_site]['dfs.permissions.superusergroup'] = 'hadoop'
-default[:hadoop][:core_site]['ha.zookeeper.quorum'] = 'hadoop'
 default[:hadoop][:core_site]['hadoop.proxyuser.hue.hosts'] = '*'
 default[:hadoop][:core_site]['hadoop.proxyuser.hue.groups'] = '*'
 
@@ -63,16 +63,29 @@ default[:hadoop][:hdfs_site]['dfs.ha.fencing.ssh.private-key-files'] = "#{node[:
 default[:hadoop][:mapred_site]['mapreduce.framework.name'] = "yarn"
 
 default[:hadoop][:yarn_site]['yarn.nodemanager.aux-services'] = "mapreduce_shuffle"
-default[:hadoop][:yarn_site]['yarn.nodemanager.aux-services.mapreduce.shuffle.class'] = "yarn.nodemanager.aux-services.mapreduce_shuffle.class"
+default[:hadoop][:yarn_site]['yarn.nodemanager.aux-services.mapreduce.shuffle.class'] = "org.apache.hadoop.mapred.ShuffleHandler"
 default[:hadoop][:yarn_site]['yarn.application.classpath'] = "$HADOOP_CONF_DIR, $HADOOP_COMMON_HOME/*, $HADOOP_COMMON_HOME/lib/*, $HADOOP_HDFS_HOME/*, $HADOOP_HDFS_HOME/lib/*, $HADOOP_MAPRED_HOME/*, $HADOOP_MAPRED_HOME/lib/*, $HADOOP_YARN_HOME/*, $HADOOP_YARN_HOME/lib/*"
 default[:hadoop][:yarn_site]['yarn.log.aggregation.enable'] = true
 default[:hadoop][:yarn_site]['yarn.nodemanager.local-dirs'] = "/mnt/hadoop/yarn/local"
 default[:hadoop][:yarn_site]['yarn.nodemanager.log-dirs'] = "/mnt/hadoop/yarn/logs"
 default[:hadoop][:yarn_site]['yarn.nodemanager.remote-app-log-dir'] = "hdfs://var/log/hadoop-yarn/app"
 
-default[:hue][:hue_server][:secretkey] = 'SOMESECRETKEY'
-default[:hue][:hue_server][:http_host] = '0.0.0.0'
-default[:hue][:hue_server][:http_port] = '8888'
+default[:hadoop][:hue_server][:secretkey] = 'SOMESECRETKEY'
+default[:hadoop][:hue_server][:http_host] = '0.0.0.0'
+default[:hadoop][:hue_server][:http_port] = '8888'
+
+default[:hadoop][:hive_site]['javax.jdo.option.ConnectionDriverName'] = 'com.mysql.jdbc.Driver'
+default[:hadoop][:hive_site]['javax.jdo.option.ConnectionUserName'] = 'hive'
+default[:hadoop][:hive_site]['javax.jdo.option.ConnectionPassword'] = 'hivepassword'
+default[:hadoop][:hive_site]['datanucleus.autoCreateSchema'] = 'false'
+default[:hadoop][:hive_site]['datanucleus.fixedDatastore'] = 'true'
+default[:hadoop][:hive_site]['datanucleus.autoStartMechanism'] = 'SchemaTable'
+default[:hadoop][:hive_site]['hive.support.concurrency'] = 'true'
+default[:hadoop][:hive_site]['hive.zookeeper.client.port'] = node[:hadoop][:zookeeper_port]
+default[:hadoop][:hive_site]['hive.server2.thrift.port'] = '10000'
+default[:hadoop][:hive_site]['hive.metastore.warehouse.dir'] = '/user/hive/warehouse'
+
+default[:hadoop][:hive_server_env]['HADOOP_MAPRED_HOME'] = "/usr/lib/hadoop-mapreduce"
 
 
 default[:hadoop][:log4j]['hadoop.root.logger']                                                 = 'INFO,console'

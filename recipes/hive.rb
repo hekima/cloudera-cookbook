@@ -18,17 +18,24 @@
 # limitations under the License.
 #
 
-include_recipe "cloudera::repo"
+include_recipe "cloudera"
+include_recipe "cloudera::update_config"
 
-package "mysql-connector-java"
-package "hadoop-hive"
-package "hadoop-#{node[:hadoop][:version]}-native"
+package "hive"
 
-execute "copy_connector" do
-  command "cp /usr/share/java/mysql-connector-java.jar /usr/lib/hive/lib/mysql-connector-java.jar"
+mysql_server = node[:opsworks][:layers][:mysql][:instances].values[0][:private_ip]
+
+if node[:opsworks][:instance][:layers].include?('hadoop_hive_metastore') do
+  metastore = node[:opsworks][:instance][:private_ip]
+else
+  metastore = node[:opsworks][:layers][:hadoop_hive_metastore][:instances].values[0][:private_ip]
 end
 
-hive_site_vars = { :options => node[:hive][:hive_site_options] }
+node.default[:hadoop][:hive_site]['javax.jdo.option.ConnectionURL'] = "jdbc:mysql://#{mysql_server}/metastore"
+node.default[:hadoop][:hive_site]['hive.metastore.uris'] = "thrift://#{metastore}:9083"
+node.default[:hadoop][:hive_site]['hive.zookeeper.quorum'] = node[:opsworks][:layers][:zookeeper][:instances].values.map{|x| x[:private_dns_name]}.sort.join(',')
+
+hive_site_vars = { :options => node[:hadoop][:hive_site] }
 
 template "/etc/hive/conf/hive-site.xml" do
   source "generic-site.xml.erb"
@@ -37,4 +44,14 @@ template "/etc/hive/conf/hive-site.xml" do
   group "root"
   action :create
   variables hive_site_vars
+end
+
+execute "create hive home" do
+  command "hadoop fs -mkdir -p #{node[:hadoop][:hive_site]['hive.metastore.warehouse.dir']}"
+end
+execute "chown hive home" do
+  command "hadoop fs -chown hive #{node[:hadoop][:hive_site]['hive.metastore.warehouse.dir']}"
+end
+execute "chmod hive home" do
+  command "hadoop fs -chmod 1777 #{node[:hadoop][:hive_site]['hive.metastore.warehouse.dir']}"
 end

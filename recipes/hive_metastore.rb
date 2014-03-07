@@ -19,8 +19,25 @@
 #
 
 include_recipe "cloudera::repo"
+include_recipe "hive"
 
 package "hadoop-hive-metastore"
+
+mysql_server = node[:opsworks][:layers][:mysql][:instances].values[0][:private_ip]
+
+case node[:platform_family]
+when "rhel"
+  package "mysql-connector-java"
+  execute "copy_connector" do
+    command "ln -s /usr/share/java/mysql-connector-java.jar /usr/lib/hive/lib/mysql-connector-java.jar"
+  end
+end
+when "debian"
+  package "libmysql-java"
+  execute "copy_connector" do
+    command "ln -s /usr/share/java/libmysql-java.jar /usr/lib/hive/lib/libmysql-java.jar"
+  end
+end
 
 case node[:platform_family]
 when "rhel"
@@ -30,11 +47,23 @@ when "rhel"
     owner "root"
     group "root"
     variables(
-      :java_home => node[:hadoop][:hadoop_env]['java_home']
+      :JAVA_HOME => node[:hadoop][:hadoop_env]['JAVA_HOME']
     )
   end
 end
 
-service "hadoop-hive-metastore" do
-  action [ :start, :enable ]
+execute "create metastore and users" do
+  command "mysql -h #{mysql_server} -u root -p #{node[:mysql][:server_root_password]} -e "\
+          "\"CREATE DATABASE metastore;"\
+          "USE metastore;"\
+          "SOURCE /usr/lib/hive/scripts/metastore/upgrade/mysql/hive-schema-0.12.0.mysql.sql;"\
+          "CREATE USER 'hive'@'#{mysql_server}' IDENTIFIED BY '#{node[:hadoop][:hive_site]['javax.jdo.option.ConnectionPassword']}';"\
+          "REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'hive'@'#{mysql_server}';"\
+          "GRANT SELECT,INSERT,UPDATE,DELETE,LOCK TABLES,EXECUTE ON metastore.* TO 'hive'@'#{mysql_server}';"\
+          "FLUSH PRIVILEGES;\""
+
+end
+
+service "hive-metastore" do
+  action [ :restart, :enable ]
 end
