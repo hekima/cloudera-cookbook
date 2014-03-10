@@ -29,12 +29,12 @@ case node[:platform_family]
 when "rhel"
   package "mysql-connector-java"
   execute "copy_connector" do
-    command "ln -s /usr/share/java/mysql-connector-java.jar /usr/lib/hive/lib/mysql-connector-java.jar"
+    command "ln -sf /usr/share/java/mysql-connector-java.jar /usr/lib/hive/lib/mysql-connector-java.jar"
   end
 when "debian"
   package "libmysql-java"
   execute "copy_connector" do
-    command "ln -s /usr/share/java/libmysql-java.jar /usr/lib/hive/lib/libmysql-java.jar"
+    command "ln -sf /usr/share/java/libmysql-java.jar /usr/lib/hive/lib/libmysql-java.jar"
   end
 end
 
@@ -52,7 +52,7 @@ when "rhel"
 end
 
 execute "init schema" do
-  command "schematool -dbType mysql -initSchema"
+  command "/usr/lib/hive/bin/schematool -dbType mysql -initSchema"
 end
 
 #execute "create metastore and users" do

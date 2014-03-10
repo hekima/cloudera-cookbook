@@ -46,6 +46,14 @@ template "/etc/hive/conf/hive-site.xml" do
   variables hive_site_vars
 end
 
+execute "create hive actual home" do
+  user "hdfs"
+  command "hadoop fs -mkdir -p /user/hive"
+end
+execute "chown hive actual home" do
+  user "hdfs"
+  command "hadoop fs -chown hive /user/hive"
+end
 execute "create hive home" do
   user "hdfs"
   command "hadoop fs -mkdir -p #{node[:hadoop][:hive_site]['hive.metastore.warehouse.dir']}"
