@@ -48,7 +48,7 @@ directory chef_conf_dir do
   recursive true
 end
 
-directory impala_conf_dir do
+directory impala_chef_conf_dir do
   mode 0755
   owner "root"
   group "root"

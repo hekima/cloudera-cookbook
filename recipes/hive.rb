@@ -23,9 +23,9 @@ include_recipe "cloudera::update_config"
 
 package "hive"
 
-mysql_server = node[:opsworks][:layers][:mysql][:instances].values[0][:private_ip]
+mysql_server = node[:mysql][:clients][0]
 
-if node[:opsworks][:instance][:layers].include?('hive_metastore') do
+if node[:opsworks][:instance][:layers].include?('hive_metastore')
   metastore = node[:opsworks][:instance][:private_ip]
 else
   metastore = node[:opsworks][:layers][:hive_metastore][:instances].values[0][:private_ip]

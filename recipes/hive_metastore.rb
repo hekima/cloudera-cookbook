@@ -21,9 +21,9 @@
 include_recipe "cloudera::repo"
 include_recipe "cloudera::hive"
 
-package "hadoop-hive-metastore"
+package "hive-metastore"
 
-mysql_server = node[:opsworks][:layers][:mysql][:instances].values[0][:private_ip]
+mysql_server = node[:mysql][:clients][0]
 
 case node[:platform_family]
 when "rhel"
