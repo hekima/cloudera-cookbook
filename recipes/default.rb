@@ -27,6 +27,7 @@ include_recipe "java::default"
 include_recipe "cloudera::repo"
 
 include_recipe "cloudera::impala"
+include_recipe "mysql::client"
 
 
 package "hadoop-client"

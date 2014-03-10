@@ -23,7 +23,7 @@ include_recipe "cloudera::hive"
 
 package "hive-metastore"
 
-mysql_server = node[:mysql][:clients][0]
+mysql_server = node[:opsworks][:layers][:mysql][:instances].values[0][:private_ip]
 
 case node[:platform_family]
 when "rhel"
@@ -51,17 +51,20 @@ when "rhel"
   end
 end
 
-execute "create metastore and users" do
-  command "mysql -h #{mysql_server} -u root -p #{node[:mysql][:server_root_password]} -e "\
-          "\"CREATE DATABASE metastore;"\
-          "USE metastore;"\
-          "SOURCE /usr/lib/hive/scripts/metastore/upgrade/mysql/hive-schema-0.12.0.mysql.sql;"\
-          "CREATE USER 'hive'@'#{mysql_server}' IDENTIFIED BY '#{node[:hadoop][:hive_site]['javax.jdo.option.ConnectionPassword']}';"\
-          "REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'hive'@'#{mysql_server}';"\
-          "GRANT SELECT,INSERT,UPDATE,DELETE,LOCK TABLES,EXECUTE ON metastore.* TO 'hive'@'#{mysql_server}';"\
-          "FLUSH PRIVILEGES;\""
-
+execute "init schema" do
+  command "schematool -dbType mysql -initSchema"
 end
+
+#execute "create metastore and users" do
+#  command "mysql -h #{mysql_server} -u root -p #{node[:mysql][:server_root_password]} -e "\
+#          "\"CREATE DATABASE metastore;"\
+#          "USE metastore;"\
+#          "SOURCE /usr/lib/hive/scripts/metastore/upgrade/mysql/hive-schema-0.12.0.mysql.sql;"\
+#          "CREATE USER 'hive'@'#{mysql_server}' IDENTIFIED BY '#{node[:hadoop][:hive_site]['javax.jdo.option.ConnectionPassword']}';"\
+#          "REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'hive'@'#{mysql_server}';"\
+#          "GRANT SELECT,INSERT,UPDATE,DELETE,LOCK TABLES,EXECUTE ON metastore.* TO 'hive'@'#{mysql_server}';"\
+#          "FLUSH PRIVILEGES;\""
+#end
 
 service "hive-metastore" do
   action [ :restart, :enable ]

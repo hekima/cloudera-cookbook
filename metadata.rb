@@ -18,5 +18,6 @@ depends 'yum'
 depends 'apt'
 depends 'zookeeper'
 depends 'java'
+depends 'mysql'
 
 #hello world
