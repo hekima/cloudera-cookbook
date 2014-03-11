@@ -26,7 +26,7 @@ package "hive"
 mysql_server = node[:opsworks][:layers][:mysql][:instances].values[0][:private_ip]
 hive_chef_conf_dir = "/etc/hive/#{node[:hadoop][:conf_dir]}"
 
-directory impala_chef_conf_dir do
+directory hive_chef_conf_dir do
   mode 0755
   owner "root"
   group "root"
