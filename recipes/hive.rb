@@ -24,6 +24,15 @@ include_recipe "cloudera::update_config"
 package "hive"
 
 mysql_server = node[:opsworks][:layers][:mysql][:instances].values[0][:private_ip]
+hive_chef_conf_dir = "/etc/hive/#{node[:hadoop][:conf_dir]}"
+
+directory impala_chef_conf_dir do
+  mode 0755
+  owner "root"
+  group "root"
+  action :create
+  recursive true
+end
 
 if node[:opsworks][:instance][:layers].include?('hive_metastore')
   metastore = node[:opsworks][:instance][:private_ip]
@@ -37,7 +46,7 @@ node.default[:hadoop][:hive_site]['hive.zookeeper.quorum'] = node[:opsworks][:la
 
 hive_site_vars = { :options => node[:hadoop][:hive_site] }
 
-template "/etc/hive/conf/hive-site.xml" do
+template "#{hive_chef_conf_dir}/hive-site.xml" do
   source "generic-site.xml.erb"
   mode 0644
   owner "root"
@@ -46,23 +55,6 @@ template "/etc/hive/conf/hive-site.xml" do
   variables hive_site_vars
 end
 
-execute "create hive actual home" do
-  user "hdfs"
-  command "hadoop fs -mkdir -p /user/hive"
-end
-execute "chown hive actual home" do
-  user "hdfs"
-  command "hadoop fs -chown hive /user/hive"
-end
-execute "create hive home" do
-  user "hdfs"
-  command "hadoop fs -mkdir -p #{node[:hadoop][:hive_site]['hive.metastore.warehouse.dir']}"
-end
-execute "chown hive home" do
-  user "hdfs"
-  command "hadoop fs -chown hive #{node[:hadoop][:hive_site]['hive.metastore.warehouse.dir']}"
-end
-execute "chmod hive home" do
-  user "hdfs"
-  command "hadoop fs -chmod 1777 #{node[:hadoop][:hive_site]['hive.metastore.warehouse.dir']}"
+execute "update hadoop alternatives" do
+  command "update-alternatives --install /etc/hive/conf hive-conf #{hive_chef_conf_dir} 50"
 end

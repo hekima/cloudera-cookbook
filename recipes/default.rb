@@ -25,10 +25,7 @@
 
 include_recipe "java::default"
 include_recipe "cloudera::repo"
-
-include_recipe "cloudera::impala"
 include_recipe "mysql::client"
-
 
 package "hadoop-client"
 package "nscd"
@@ -38,8 +35,6 @@ service "nscd" do
 end
 
 chef_conf_dir = "/etc/hadoop/#{node[:hadoop][:conf_dir]}"
-impala_chef_conf_dir = "/etc/impala/#{node[:hadoop][:conf_dir]}"
-
 
 directory chef_conf_dir do
   mode 0755
@@ -48,38 +43,6 @@ directory chef_conf_dir do
   action :create
   recursive true
 end
-
-directory impala_chef_conf_dir do
-  mode 0755
-  owner "root"
-  group "root"
-  action :create
-  recursive true
-end
-
-
-
-#if node[:hadoop][:hdfs_site] && node[:hadoop][:hdfs_site]['topology.script.file.name']
-#  topology = { :options => node[:hadoop][:topology] }
-#  topology_dir = File.dirname(node[:hadoop][:hdfs_site]['topology.script.file.name'])
-#
-#  directory topology_dir do
-#    mode 0755
-#    owner "hdfs"
-#    group "hdfs"
-#    action :create
-#    recursive true
-#  end
-
-#  template node[:hadoop][:hdfs_site]['topology.script.file.name'] do
-#    source "topology.rb.erb"
-#    mode 0755
-#    owner "hdfs"
-#    group "hdfs"
-#    action :create
-#    variables topology
-#  end
-#end
 
 if node[:hadoop][:core_site]['hadoop.tmp.dir']
   hadoop_tmp_dir = node[:hadoop][:core_site]['hadoop.tmp.dir']

@@ -25,6 +25,27 @@ package "hive-metastore"
 
 mysql_server = node[:opsworks][:layers][:mysql][:instances].values[0][:private_ip]
 
+execute "create hive actual home" do
+  user "hdfs"
+  command "hadoop fs -mkdir -p /user/hive"
+end
+execute "chown hive actual home" do
+  user "hdfs"
+  command "hadoop fs -chown hive /user/hive"
+end
+execute "create hive home" do
+  user "hdfs"
+  command "hadoop fs -mkdir -p #{node[:hadoop][:hive_site]['hive.metastore.warehouse.dir']}"
+end
+execute "chown hive home" do
+  user "hdfs"
+  command "hadoop fs -chown hive #{node[:hadoop][:hive_site]['hive.metastore.warehouse.dir']}"
+end
+execute "chmod hive home" do
+  user "hdfs"
+  command "hadoop fs -chmod 1777 #{node[:hadoop][:hive_site]['hive.metastore.warehouse.dir']}"
+end
+
 case node[:platform_family]
 when "rhel"
   package "mysql-connector-java"
