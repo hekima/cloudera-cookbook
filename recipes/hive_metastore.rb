@@ -57,15 +57,14 @@ execute "create user and database" do
           "FLUSH PRIVILEGES;\""
 end
 
-execute "update privileges" do
-  command "mysql -h #{mysql_server} -u root -p#{node[:mysql][:server_root_password]} -e "\
-          "\"REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'hive'@'%';"\
-          "GRANT SELECT,INSERT,UPDATE,DELETE,LOCK TABLES,EXECUTE ON metastore.* TO 'hive'@'%';"\
-          "FLUSH PRIVILEGES;\""
-end
-
 execute "init schema" do
   command "/usr/lib/hive/bin/schematool -dbType mysql -initSchema"
+  not_if "/usr/lib/hive/bin/schematool -dbType mysql -info"
+end
+
+execute "upgrade schema" do
+  command "/usr/lib/hive/bin/schematool -dbType mysql -upgradeSchema"
+  only_if "/usr/lib/hive/bin/schematool -dbType mysql -info"
 end
 
 execute "update privileges" do
