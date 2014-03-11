@@ -28,14 +28,12 @@ mysql_server = node[:opsworks][:layers][:mysql][:instances].values[0][:private_i
 case node[:platform_family]
 when "rhel"
   package "mysql-connector-java"
-  execute "copy_connector" do
-    command "ln -sf /usr/share/java/mysql-connector-java.jar /usr/lib/hive/lib/mysql-connector-java.jar"
-  end
 when "debian"
   package "libmysql-java"
-  execute "copy_connector" do
-    command "ln -sf /usr/share/java/libmysql-java.jar /usr/lib/hive/lib/libmysql-java.jar"
-  end
+end
+
+execute "copy_connector" do
+  command "ln -sf /usr/share/java/mysql-connector-java.jar /usr/lib/hive/lib/mysql-connector-java.jar"
 end
 
 case node[:platform_family]
@@ -51,20 +49,31 @@ when "rhel"
   end
 end
 
+execute "create user and database" do
+  command "mysql -h #{mysql_server} -u root -p#{node[:mysql][:server_root_password]} -e "\
+          "\"CREATE DATABASE IF NOT EXISTS metastore;"\
+          "USE metastore;"\
+          "GRANT ALL PRIVILEGES ON metastore.* TO 'hive'@'%' IDENTIFIED BY '#{node[:hadoop][:hive_site]['javax.jdo.option.ConnectionPassword']}';"\
+          "FLUSH PRIVILEGES;\""
+end
+
+execute "update privileges" do
+  command "mysql -h #{mysql_server} -u root -p#{node[:mysql][:server_root_password]} -e "\
+          "\"REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'hive'@'%';"\
+          "GRANT SELECT,INSERT,UPDATE,DELETE,LOCK TABLES,EXECUTE ON metastore.* TO 'hive'@'%';"\
+          "FLUSH PRIVILEGES;\""
+end
+
 execute "init schema" do
   command "/usr/lib/hive/bin/schematool -dbType mysql -initSchema"
 end
 
-#execute "create metastore and users" do
-#  command "mysql -h #{mysql_server} -u root -p #{node[:mysql][:server_root_password]} -e "\
-#          "\"CREATE DATABASE metastore;"\
-#          "USE metastore;"\
-#          "SOURCE /usr/lib/hive/scripts/metastore/upgrade/mysql/hive-schema-0.12.0.mysql.sql;"\
-#          "CREATE USER 'hive'@'#{mysql_server}' IDENTIFIED BY '#{node[:hadoop][:hive_site]['javax.jdo.option.ConnectionPassword']}';"\
-#          "REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'hive'@'#{mysql_server}';"\
-#          "GRANT SELECT,INSERT,UPDATE,DELETE,LOCK TABLES,EXECUTE ON metastore.* TO 'hive'@'#{mysql_server}';"\
-#          "FLUSH PRIVILEGES;\""
-#end
+execute "update privileges" do
+  command "mysql -h #{mysql_server} -u root -p#{node[:mysql][:server_root_password]} -e "\
+          "\"REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'hive'@'%';"\
+          "GRANT SELECT,INSERT,UPDATE,DELETE,LOCK TABLES,EXECUTE ON metastore.* TO 'hive'@'%';"\
+          "FLUSH PRIVILEGES;\""
+end
 
 service "hive-metastore" do
   action [ :restart, :enable ]
