@@ -25,6 +25,16 @@ package "impala"
 package "impala-shell"
 
 impala_chef_conf_dir = "/etc/impala/#{node[:hadoop][:conf_dir]}"
+if node[:opsworks][:layers][:impala_catalog][:instances].empty?
+  catalog_server = "invalid"
+else
+  catalog_server = node[:opsworks][:layers][:impala_catalog][:instances].values[0][:private_ip]
+end
+if node[:opsworks][:layers][:impala_state_store][:instances].empty?
+  state_store_server = "invalid"
+else
+  state_store_server = node[:opsworks][:layers][:impala_state_store][:instances].values[0][:private_ip]
+end
 
 directory impala_chef_conf_dir do
   mode 0755
@@ -48,4 +58,15 @@ end
 
 execute "update impala alternatives" do
   command "update-alternatives --install /etc/impala/conf impala-conf #{impala_chef_conf_dir} 50"
+end
+
+node.default[:hadoop][:impala_env]['IMPALA_CATALOG_HOST'] = catalog_server
+node.default[:hadoop][:impala_env]['IMPALA_STATE_STORE_HOST'] = state_store_server
+
+template "/etc/default/impala" do
+  mode 0644
+  owner "root"
+  group "root"
+  action :create
+  variables( :options => node[:hadoop][:impala_env] )
 end

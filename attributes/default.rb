@@ -94,6 +94,19 @@ default[:hadoop][:hive_site]['hive.exec.scratchdir'] = '/user/hive/tmp'
 
 default[:hadoop][:hive_server_env]['HADOOP_MAPRED_HOME'] = "/usr/lib/hadoop-mapreduce"
 
+default[:hadoop][:impala_env]['IMPALA_CATALOG_PORT'] = "26000"
+default[:hadoop][:impala_env]['IMPALA_STATE_STORE_PORT'] = "24000"
+default[:hadoop][:impala_env]['IMPALA_BACKEND_PORT'] = "22000"
+default[:hadoop][:impala_env]['IMPALA_LOG_DIR'] = "/var/log/impala"
+default[:hadoop][:impala_env]['IMPALA_CATALOG_ARGS'] = "\" -log_dir=${IMPALA_LOG_DIR} \""
+default[:hadoop][:impala_env]['IMPALA_STATE_STORE_ARGS'] = "\" -log_dir=${IMPALA_LOG_DIR} -state_store_port=${IMPALA_STATE_STORE_PORT}\""
+default[:hadoop][:impala_env]['IMPALA_SERVER_ARGS'] = "\"-log_dir=${IMPALA_LOG_DIR} "\
+                                                      "-catalog_service_host=${IMPALA_CATALOG_HOST} "\
+                                                      "-catalog_service_port=${IMPALA_CATALOG_PORT} "\
+                                                      "-use_statestore -state_store_host=${IMPALA_STATE_STORE_HOST} "\
+                                                      "-state_store_port=${IMPALA_STATE_STORE_PORT} "\
+                                                      "-be_port=${IMPALA_BACKEND_PORT}\""
+default[:hadoop][:impala_env]['ENABLE_CORE_DUMPS'] = "true"
 
 default[:hadoop][:log4j]['hadoop.root.logger']                                                 = 'INFO,console'
 default[:hadoop][:log4j]['hadoop.security.logger']                                             = 'INFO,console'
