@@ -44,5 +44,5 @@ when "debian"
 #    components [ "contrib" ]
 #    deb_src true
 #    action :add
-  end
+#  end
 end
