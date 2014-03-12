@@ -96,7 +96,7 @@ if historyserver.empty?
     historyserver = "localhost"
   end
 else
-  historyserver = historyserver.first
+  historyserver = historyserver.first['fqdn']
 end
 
 node.default[:hadoop][:mapred_site]['mapreduce.jobhistory.address'] = "#{historyserver}:10020"
