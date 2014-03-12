@@ -64,6 +64,7 @@ node.default[:hadoop][:impala_env]['IMPALA_CATALOG_HOST'] = catalog_server
 node.default[:hadoop][:impala_env]['IMPALA_STATE_STORE_HOST'] = state_store_server
 
 template "/etc/default/impala" do
+  source "hadoop-env.sh.erb"
   mode 0644
   owner "root"
   group "root"
