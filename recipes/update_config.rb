@@ -88,9 +88,23 @@ template "#{chef_conf_dir}/hdfs-site.xml" do
   variables hdfs_site_vars
 end
 
-resourcemanager = find_matching_nodes(["hadoop_resourcemanager"]).first
+historyserver = find_matching_nodes(["hadoop_historyserver"])
+if historyserver.empty?
+  if node[:opsworks][:instance][:layers].include? "hadoop_historyserver" or node[:opsworks][:instance][:layers].include? :hadoop_historyserver
+    historyserver = node[:opsworks][:instance][:private_dns_name]
+  else
+    historyserver = "localhost"
+  end
+else
+  historyserver = historyserver.first
+end
 
+node.default[:hadoop][:mapred_site]['mapreduce.jobhistory.address'] = "#{historyserver}:10020"
+node.default[:hadoop][:mapred_site]['mapreduce.jobhistory.webapp.address'] = "#{historyserver}:19888"
+
+resourcemanager = find_matching_nodes(["hadoop_resourcemanager"]).first
 node.default[:hadoop][:mapred_site]['mapred.job.tracker'] = "#{resourcemanager[:fqdn]}:#{node[:hadoop][:resourcemanager_port]}" if resourcemanager
+
 mapred_site_vars = { :options => node[:hadoop][:mapred_site] }
 
 template "#{chef_conf_dir}/mapred-site.xml" do

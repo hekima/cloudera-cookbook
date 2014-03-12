@@ -59,7 +59,16 @@ node[:hadoop][:hdfs_site]['dfs.datanode.data.dir'].split(',').each do |dir|
     owner "hdfs"
     group "hdfs"
   end
+end
 
+
+execute "create /tmp" do
+  user "hdfs"
+  command "hadoop fs -mkdir -p /tmp"
+end
+execute "chmod /tmp" do
+  user "hdfs"
+  command "hadoop fs -chmod 1777 /tmp"
 end
 
 service "hadoop-hdfs-datanode" do

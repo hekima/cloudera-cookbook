@@ -66,14 +66,15 @@ default[:hadoop][:hdfs_site]['dfs.client.file-block-storage-locations.timeout'] 
 
 
 default[:hadoop][:mapred_site]['mapreduce.framework.name'] = "yarn"
+default[:hadoop][:mapred_site]['yarn.app.mapreduce.am.staging-dir'] = "/user"
 
 default[:hadoop][:yarn_site]['yarn.nodemanager.aux-services'] = "mapreduce_shuffle"
 default[:hadoop][:yarn_site]['yarn.nodemanager.aux-services.mapreduce.shuffle.class'] = "org.apache.hadoop.mapred.ShuffleHandler"
 default[:hadoop][:yarn_site]['yarn.application.classpath'] = "$HADOOP_CONF_DIR, $HADOOP_COMMON_HOME/*, $HADOOP_COMMON_HOME/lib/*, $HADOOP_HDFS_HOME/*, $HADOOP_HDFS_HOME/lib/*, $HADOOP_MAPRED_HOME/*, $HADOOP_MAPRED_HOME/lib/*, $HADOOP_YARN_HOME/*, $HADOOP_YARN_HOME/lib/*"
-default[:hadoop][:yarn_site]['yarn.log.aggregation.enable'] = true
+default[:hadoop][:yarn_site]['yarn.log.aggregation.enable'] = "true"
 default[:hadoop][:yarn_site]['yarn.nodemanager.local-dirs'] = "/mnt/hadoop/yarn/local"
 default[:hadoop][:yarn_site]['yarn.nodemanager.log-dirs'] = "/mnt/hadoop/yarn/logs"
-default[:hadoop][:yarn_site]['yarn.nodemanager.remote-app-log-dir'] = "hdfs://var/log/hadoop-yarn/app"
+default[:hadoop][:yarn_site]['yarn.nodemanager.remote-app-log-dir'] = "hdfs://var/log/hadoop-yarn/apps"
 
 default[:hadoop][:hue_server][:secretkey] = 'SOMESECRETKEY'
 default[:hadoop][:hue_server][:http_host] = '0.0.0.0'

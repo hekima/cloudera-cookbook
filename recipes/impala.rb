@@ -26,12 +26,20 @@ package "impala-shell"
 
 impala_chef_conf_dir = "/etc/impala/#{node[:hadoop][:conf_dir]}"
 if node[:opsworks][:layers][:impala_catalog][:instances].empty?
-  catalog_server = "invalid"
+  if node[:opsworks][:instance][:layers].include? "impala_catalog" or node[:opsworks][:instance][:layers].include? :impala_catalog
+    catalog_server = node[:opsworks][:instance][:private_ip]
+  else
+    catalog_server = "invalid"
+  end
 else
   catalog_server = node[:opsworks][:layers][:impala_catalog][:instances].values[0][:private_ip]
 end
 if node[:opsworks][:layers][:impala_state_store][:instances].empty?
-  state_store_server = "invalid"
+  if node[:opsworks][:instance][:layers].include? "impala_state_store" or node[:opsworks][:instance][:layers].include? :impala_state_store
+    state_store_server = node[:opsworks][:instance][:private_ip]
+  else
+    state_store_server = "invalid"
+  end
 else
   state_store_server = node[:opsworks][:layers][:impala_state_store][:instances].values[0][:private_ip]
 end

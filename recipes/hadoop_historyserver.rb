@@ -40,6 +40,19 @@ when "rhel"
   end
 end
 
+execute "create history home" do
+  user "hdfs"
+  command "hadoop fs -mkdir -p /user/history"
+end
+execute "chown hive home" do
+  user "hdfs"
+  command "hadoop fs -chown mapred:hadoop /user/history"
+end
+execute "chmod hive home" do
+  user "hdfs"
+  command "hadoop fs -chmod 1777 /user/history"
+end
+
 service "hadoop-mapreduce-historyserver" do
   action [ :restart, :enable ]
 end
