@@ -25,6 +25,15 @@ include_recipe "cloudera::update_config"
 
 package "impala-state-store"
 
+execute "create impala actual home" do
+  user "hdfs"
+  command "hadoop fs -mkdir -p /user/impala"
+end
+execute "chown impala actual home" do
+  user "hdfs"
+  command "hadoop fs -chown impala /user/impala"
+end
+
 service "impala-state-store" do
   action [ :restart, :enable ]
 end

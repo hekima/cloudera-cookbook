@@ -21,7 +21,7 @@
 
 default[:hadoop][:version]                = "2.2"
 default[:hadoop][:release]                = "5.0.0b2"
-default[:hadoop][:impala_release]         = "1.2.4"
+default[:hadoop][:impala_release]         = "1.2.3"
 default[:hadoop][:opsworks]               = false
 
 default[:hadoop][:namenode_port]          = "8020"
