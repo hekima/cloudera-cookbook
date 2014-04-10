@@ -23,7 +23,12 @@ include_recipe "cloudera::update_config"
 
 package "hive"
 
-mysql_server = node[:opsworks][:layers][:mysql][:instances].values[0][:private_ip]
+mysql_server = node[:opsworks][:layers][:mysql][:instances].values
+if mysql_server.empty?
+  mysql_server = 'localhost'
+else
+  mysql_server = mysql_server.first[:private_ip]
+end
 hive_chef_conf_dir = "/etc/hive/#{node[:hadoop][:conf_dir]}"
 
 directory hive_chef_conf_dir do
@@ -37,7 +42,12 @@ end
 if node[:opsworks][:instance][:layers].include?('hive_metastore')
   metastore = node[:opsworks][:instance][:private_ip]
 else
-  metastore = node[:opsworks][:layers][:hive_metastore][:instances].values[0][:private_ip]
+  metastore = node[:opsworks][:layers][:hive_metastore][:instances].values;
+  if metastore.empty?
+    metastore = 'localhost'
+  else
+    metastore = metastore.first[:private_ip]
+  end
 end
 
 node.default[:hadoop][:hive_site]['javax.jdo.option.ConnectionURL'] = "jdbc:mysql://#{mysql_server}/metastore"

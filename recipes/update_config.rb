@@ -102,7 +102,17 @@ end
 node.default[:hadoop][:mapred_site]['mapreduce.jobhistory.address'] = "#{historyserver}:10020"
 node.default[:hadoop][:mapred_site]['mapreduce.jobhistory.webapp.address'] = "#{historyserver}:19888"
 
-resourcemanager = find_matching_nodes(["hadoop_resourcemanager"]).first
+resourcemanager = search_for_nodes(["hadoop_resourcemanager"], 'fqdn')
+if resourcemanager.empty?
+  if node[:opsworks][:instance][:layers].include? "hadoop_resourcemanager" or node[:opsworks][:instance][:layers].include? :hadoop_resourcemanager
+    resourcemanager = node[:opsworks][:instance][:private_dns_name]
+  else
+    resourcemanager = "localhost"
+  end
+else
+  resourcemanager = resourcemanager.first
+end
+
 node.default[:hadoop][:mapred_site]['mapred.job.tracker'] = "#{resourcemanager[:fqdn]}:#{node[:hadoop][:resourcemanager_port]}" if resourcemanager
 
 mapred_site_vars = { :options => node[:hadoop][:mapred_site] }
@@ -116,7 +126,6 @@ template "#{chef_conf_dir}/mapred-site.xml" do
   variables mapred_site_vars
 end
 
-resourcemanager = search_for_nodes(["hadoop_resourcemanager"], 'fqdn').first
 node.default[:hadoop][:yarn_site]['yarn.resourcemanager.hostname'] = resourcemanager
 node.default[:hadoop][:yarn_site]['yarn.nodemanager.hostname'] = node[:opsworks][:instance][:private_dns_name]
 node.default[:hadoop][:yarn_site]['yarn.nodemanager.address'] = "#{node[:opsworks][:instance][:private_dns_name]}:0"
