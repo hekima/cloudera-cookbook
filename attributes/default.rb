@@ -19,9 +19,9 @@
 # limitations under the License.
 #
 
-default[:hadoop][:version]                = "2.2"
-default[:hadoop][:release]                = "5.0.0b2"
-default[:hadoop][:impala_release]         = "1.2.3"
+default[:hadoop][:version]                = "2.3"
+default[:hadoop][:release]                = "5.0.0"
+default[:hadoop][:impala_release]         = "1.3.0"
 default[:hadoop][:opsworks]               = false
 
 default[:hadoop][:namenode_port]          = "8020"
@@ -32,8 +32,10 @@ default[:hadoop][:zookeeper_port]         = "2181"
 default[:hadoop][:conf_dir]               = "conf.chef"
 
 default[:java][:jdk_version]               = '7'
+default[:java][:install_flavor]            = 'oracle'
+default[:java][:oracle][:accept_oracle_download_terms] = true
 
-default[:hadoop][:hadoop_env]['JAVA_HOME'] = "/usr/lib/jvm/java-7-openjdk-amd64"
+default[:hadoop][:hadoop_env]['JAVA_HOME'] = "/usr/lib/jvm/default-java"
 
 # Provide rack info
 default[:hadoop][:rackaware][:datacenter] = "default"
@@ -49,6 +51,8 @@ default[:hadoop][:core_site]['fs.defaultFS'] = "hdfs://#{node[:hadoop][:hdfs_sit
 default[:hadoop][:core_site]['dfs.permissions.superusergroup'] = 'hadoop'
 default[:hadoop][:core_site]['hadoop.proxyuser.hue.hosts'] = '*'
 default[:hadoop][:core_site]['hadoop.proxyuser.hue.groups'] = '*'
+default[:hadoop][:core_site]['io.compression.codecs'] = 'org.apache.hadoop.io.compress.DefaultCodec,org.apache.hadoop.io.compress.GzipCodec,org.apache.hadoop.io.compress.BZip2Codec,org.apache.hadoop.io.compress.DeflateCodec,org.apache.hadoop.io.compress.SnappyCodec,org.apache.hadoop.io.compress.Lz4Codec'
+default[:hadoop][:core_site]['io.file.buffer.size'] = '65536'
 
 default[:hadoop][:hdfs_site]['dfs.namenode.name.dir'] = "/mnt/hadoop/dfs/namenode"
 default[:hadoop][:hdfs_site]['dfs.datanode.data.dir'] = "/mnt/hadoop/dfs/datanode"
@@ -64,6 +68,9 @@ default[:hadoop][:hdfs_site]['dfs.client.read.shortcircuit'] = 'true'
 default[:hadoop][:hdfs_site]['dfs.domain.socket.path'] = '/var/run/hadoop-hdfs/dn._PORT'
 default[:hadoop][:hdfs_site]['dfs.client.file-block-storage-locations.timeout'] = '3000'
 
+default[:hadoop][:hdfs_site]['dfs.replication'] = '3'
+default[:hadoop][:hdfs_site]['dfs.blocksize'] = '134217728'
+default[:hadoop][:hdfs_site]['dfs.datanode.hdfs-blocks-metadata.enabled'] = 'true'
 
 default[:hadoop][:mapred_site]['mapreduce.framework.name'] = "yarn"
 default[:hadoop][:mapred_site]['yarn.app.mapreduce.am.staging-dir'] = "/user"
